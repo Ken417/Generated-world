@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: SineWave
-  m_Shader: {fileID: 4800000, guid: fabbb42efeecb5843b20a7db0a15d6e8, type: 3}
+  m_Shader: {fileID: 4800000, guid: 9d2d12dbaa5eeae44b8f7258384b25c9, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
