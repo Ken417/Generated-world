@@ -4,20 +4,22 @@ using UnityEngine;
 
 public class GenerateField : MonoBehaviour
 {
-    [SerializeField]
+    [Header("生成時に使うマテリアル"),SerializeField]
     Material material = null;
 
-    [SerializeField]
-    [Header("フィールドの大きさ")]
+    [Header("フラットシェーディング風メッシュにするか"), SerializeField]
+    bool flatMesh = false;
+
+    [Header("フィールドの大きさ"),SerializeField]
     Vector2 fieldSize = new Vector2(10, 10);
 
-    [SerializeField]
-    [Header("起伏のなめらかさ")]
+    [Header("起伏のなめらかさ"),SerializeField]
     float relief = 15f;
 
-    [SerializeField]
-    [Header("高さの最大値")]
+    [Header("高さの最大値"),SerializeField]
     float maxHeight = 10;
+
+
 
     // Start is called before the first frame update
     void Start()
@@ -74,9 +76,15 @@ public class GenerateField : MonoBehaviour
 
         mesh.RecalculateNormals();
 
+        if(flatMesh)
+        {
+            mesh = FlatMesh.ChangeFlatMesh(mesh);
+        }
+
         filter.sharedMesh = mesh;
         collider.sharedMesh = mesh;
         renderer.material = material;
+
     }
 
     // Update is called once per frame
@@ -84,4 +92,7 @@ public class GenerateField : MonoBehaviour
     {
 
     }
+
+
+
 }
