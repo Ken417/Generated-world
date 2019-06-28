@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-public class GenerateField : MonoBehaviour
+public class GenerateField_old : MonoBehaviour
 {
     [Header("アセットとして書き出す"),SerializeField]
     bool createAssets = false;
@@ -20,6 +20,9 @@ public class GenerateField : MonoBehaviour
 
     [Header("x=起伏のなめらかさ,y=高さの最大値"), SerializeField]
     Vector2[] perlinNoise;
+
+    [Header("フィールドの色"), SerializeField]
+    public Gradient coloring;
 
     // Start is called before the first frame update
     void Start()
