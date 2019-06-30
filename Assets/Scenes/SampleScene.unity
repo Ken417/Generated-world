@@ -259,6 +259,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   resolution: 100
+  usePerlinNoise: 1
+  perlinNoiseSeed: {x: 0, y: 0}
   frequency: 3
   octaves: 5
   lacunarity: 2
@@ -266,8 +268,15 @@ MonoBehaviour:
   maxHeight: 1
   minHeight: 0.4
   minHeightRewind: 0.15
+  useMask: 1
+  verticesHeight: 0
+  pNoiseMaskSeed: {x: 0, y: 0}
+  pNoiseMaskFrequency: 3
+  pNoiseMaskAmount: 0
   cercleMaskRadius: 0
-  maskAmount: 0
+  cercleMaskAmount: 0
+  edgeMaskWidth: 0
+  edgeMaskAmount: 0
   coloring:
     serializedVersion: 2
     key0: {r: 0.07450981, g: 0.07450981, b: 0.07450981, a: 1}
@@ -357,6 +366,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   resolution: 200
+  usePerlinNoise: 1
+  perlinNoiseSeed: {x: 0, y: 0}
   frequency: 6.81
   octaves: 7
   lacunarity: 1.79
@@ -364,8 +375,15 @@ MonoBehaviour:
   maxHeight: 0.761
   minHeight: 0.364
   minHeightRewind: 0.15
+  useMask: 1
+  verticesHeight: 0
+  pNoiseMaskSeed: {x: 0, y: 0}
+  pNoiseMaskFrequency: 3
+  pNoiseMaskAmount: 0
   cercleMaskRadius: 0
-  maskAmount: 0
+  cercleMaskAmount: 0
+  edgeMaskWidth: 0
+  edgeMaskAmount: 0
   coloring:
     serializedVersion: 2
     key0: {r: 0.07450981, g: 0.07450981, b: 0.07450981, a: 1}

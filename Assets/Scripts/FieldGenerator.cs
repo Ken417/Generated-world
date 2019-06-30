@@ -42,17 +42,34 @@ public class FieldGenerator : MonoBehaviour
     [Header("最低高度にどれだけ元の高度をのせるか"), Range(0f, 1f), SerializeField]
     float minHeightRewind = 0.15f;
 
+
+    [Header("マスクを使うかどうか"), SerializeField]
+    bool useMask = true;
+
+    [Header("全体Y軸の上下"), Range(-1f, 1f), SerializeField]
+    float verticesHeight = 0;
+
+    [Header("パーリンノイズマスクのシード"), SerializeField]
+    Vector2 pNoiseMaskSeed;
+
+    [Header("パーリンノイズのマスクの周波数"), SerializeField]
+    float pNoiseMaskFrequency = 3;
+
+    [Header("パーリンノイズマスクの影響レベル"), Range(0f, 2f), SerializeField]
+    float pNoiseMaskAmount = 0;
+
     [Header("サークルマスクの半径"), Range(0f, 100f), SerializeField]
     float cercleMaskRadius = 0;
 
-    [Header("マスクの影響レベル"), Range(-0.5f, 0.5f), SerializeField]
+    [Header("サークルマスクマスクの影響レベル"), Range(-0.5f, 0.5f), SerializeField]
     float cercleMaskAmount = 0;
 
     [Header("エッジマスクの幅"), Range(0f, 100f), SerializeField]
     float edgeMaskWidth = 0;
 
-    [Header("マスクの影響レベル"), Range(-0.5f, 0.5f), SerializeField]
+    [Header("エッジマスクマスクの影響レベル"), Range(-0.5f, 0.5f), SerializeField]
     float edgeMaskAmount = 0;
+
 
     [Header("山の色"), SerializeField]
     Gradient coloring;
@@ -105,8 +122,11 @@ public class FieldGenerator : MonoBehaviour
         {
             CreateGrid();
         }
-        AddMask();
-        if(usePerlinNoise)
+        if(useMask)
+        {
+            AddMask();
+        }
+        if (usePerlinNoise)
         {
             AddPerlinNoise();
         }
@@ -121,8 +141,12 @@ public class FieldGenerator : MonoBehaviour
             {
                 float amplitude = 1f;
                 float range = 1f;
-                float sample = verticesMask[v].y;
+                float sample = 0;
                 float freq = frequency;
+                if (useMask)
+                {
+                    sample = verticesMask[v].y;
+                }
                 for (int o = 0; o< octaves;++o)
                 {
                     float xSample = ((float)x/ resolution + perlinNoiseSeed.x) * freq;
@@ -168,6 +192,10 @@ public class FieldGenerator : MonoBehaviour
                     verticesMask[v].y = (r - ((x - p) * (x - p) + (z - p) * (z - p))) * (cercleMaskAmount / r);
                 }
 
+                float xSample = ((float)x / resolution + pNoiseMaskSeed.x) * pNoiseMaskFrequency;
+                float zSample = ((float)z / resolution + pNoiseMaskSeed.y) * pNoiseMaskFrequency;
+                verticesMask[v].y += Mathf.PerlinNoise(xSample, zSample) * pNoiseMaskAmount;
+
                 //エッジマスク
                 float emWidth = edgeMaskWidth * ((float)resolution / defaultResolution);
                 if (emWidth > z|| (resolution - emWidth) <z || emWidth > x || (resolution - emWidth) < x)
@@ -182,25 +210,27 @@ public class FieldGenerator : MonoBehaviour
                     {
                         if ((resolution - emWidth) < z)
                         {
-                            verticesMask[v].y = (emWidth - (resolution - z)) * edgeMaskAmount;
+                            verticesMask[v].y += (emWidth - (resolution - z)) * edgeMaskAmount;
                         }
                         else if (emWidth > z)
                         {
-                            verticesMask[v].y = (emWidth - z) * edgeMaskAmount;
+                            verticesMask[v].y += (emWidth - z) * edgeMaskAmount;
                         }
                     }
                     else
                     {
                         if ((resolution - emWidth) < x)
                         {
-                            verticesMask[v].y = (emWidth - (resolution - x)) * edgeMaskAmount;
+                            verticesMask[v].y += (emWidth - (resolution - x)) * edgeMaskAmount;
                         }
                         else if (emWidth > x)
                         {
-                            verticesMask[v].y = (emWidth - x) * edgeMaskAmount;
+                            verticesMask[v].y += (emWidth - x) * edgeMaskAmount;
                         }
                     }
                 }
+
+                verticesMask[v].y += verticesHeight;
 
                 colors[v] = coloring.Evaluate(verticesMask[v].y * colorWidth+(colorPos/10));
             }
