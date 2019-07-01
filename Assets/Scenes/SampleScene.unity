@@ -120,6 +120,111 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &554183393
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 554183397}
+  - component: {fileID: 554183396}
+  - component: {fileID: 554183395}
+  - component: {fileID: 554183394}
+  - component: {fileID: 554183398}
+  m_Layer: 0
+  m_Name: Water
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!64 &554183394
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 554183393}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Convex: 0
+  m_CookingOptions: 14
+  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &554183395
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 554183393}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 83099d7eb7e89ba4592fb9b51493faf9, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+--- !u!33 &554183396
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 554183393}
+  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &554183397
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 554183393}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &554183398
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 554183393}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e03b387c97a7ee047afd21c0d7ff65f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -253,7 +358,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 753137440}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9a507315efe5c204a9e3bccec9d0678c, type: 3}
   m_Name: 
@@ -266,34 +371,33 @@ MonoBehaviour:
   lacunarity: 2
   persistence: 0.5
   maxHeight: 1
-  minHeight: 0.4
+  minHeight: -0.2
   minHeightRewind: 0.15
   useMask: 1
-  verticesHeight: 0
   pNoiseMaskSeed: {x: 0, y: 0}
   pNoiseMaskFrequency: 3
   pNoiseMaskAmount: 0
   cercleMaskRadius: 0
   cercleMaskAmount: 0
-  edgeMaskWidth: 0
-  edgeMaskAmount: 0
+  edgeMaskWidth: 10
+  edgeMaskAmount: -0.1
   coloring:
     serializedVersion: 2
-    key0: {r: 0.07450981, g: 0.07450981, b: 0.07450981, a: 1}
-    key1: {r: 0.12941177, g: 0.29803923, b: 0.09411766, a: 1}
-    key2: {r: 0.121568635, g: 0.20784315, b: 0.15686275, a: 0}
-    key3: {r: 0.3137255, g: 0.54509807, b: 0.2901961, a: 0}
-    key4: {r: 0.9607844, g: 0.91372555, b: 0.8745099, a: 0}
+    key0: {r: 0.6037736, g: 0.6037736, b: 0.6037736, a: 1}
+    key1: {r: 0.6698113, g: 0.6294716, b: 0.48972055, a: 1}
+    key2: {r: 0.6981132, g: 0.6907183, b: 0.6553044, a: 0}
+    key3: {r: 0.6603774, g: 0.52275157, b: 0.40806338, a: 0}
+    key4: {r: 0.7294118, g: 0.70980394, b: 0.6901961, a: 0}
     key5: {r: 0.7294118, g: 0.70980394, b: 0.6901961, a: 0}
-    key6: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0.7294118, g: 0.70980394, b: 0.6901961, a: 0}
     key7: {r: 0, g: 0, b: 0, a: 0}
     ctime0: 0
     ctime1: 19661
     ctime2: 32768
-    ctime3: 43176
-    ctime4: 51079
+    ctime3: 51079
+    ctime4: 65535
     ctime5: 65535
-    ctime6: 0
+    ctime6: 65535
     ctime7: 0
     atime0: 0
     atime1: 65535
@@ -304,7 +408,7 @@ MonoBehaviour:
     atime6: 0
     atime7: 0
     m_Mode: 0
-    m_NumColorKeys: 6
+    m_NumColorKeys: 5
     m_NumAlphaKeys: 2
   colorWidth: 1
   colorPos: 0
@@ -360,47 +464,46 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 753137440}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9a507315efe5c204a9e3bccec9d0678c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  resolution: 200
+  resolution: 100
   usePerlinNoise: 1
   perlinNoiseSeed: {x: 0, y: 0}
-  frequency: 6.81
-  octaves: 7
-  lacunarity: 1.79
-  persistence: 0.545
-  maxHeight: 0.761
-  minHeight: 0.364
+  frequency: 3
+  octaves: 5
+  lacunarity: 2.85
+  persistence: 0.5
+  maxHeight: 0.169
+  minHeight: -0.2
   minHeightRewind: 0.15
   useMask: 1
-  verticesHeight: 0
   pNoiseMaskSeed: {x: 0, y: 0}
-  pNoiseMaskFrequency: 3
-  pNoiseMaskAmount: 0
+  pNoiseMaskFrequency: 14.89
+  pNoiseMaskAmount: 0.03
   cercleMaskRadius: 0
   cercleMaskAmount: 0
   edgeMaskWidth: 0
-  edgeMaskAmount: 0
+  edgeMaskAmount: -0.1
   coloring:
     serializedVersion: 2
-    key0: {r: 0.07450981, g: 0.07450981, b: 0.07450981, a: 1}
-    key1: {r: 0.12941177, g: 0.29803923, b: 0.09411766, a: 1}
-    key2: {r: 0.121568635, g: 0.20784315, b: 0.15686275, a: 0}
-    key3: {r: 0.3137255, g: 0.54509807, b: 0.2901961, a: 0}
-    key4: {r: 0.9607844, g: 0.91372555, b: 0.8745099, a: 0}
+    key0: {r: 0.52156866, g: 0.57254905, b: 0.53333336, a: 1}
+    key1: {r: 0.18064368, g: 0.28050038, b: 0.088579066, a: 1}
+    key2: {r: 0.18064368, g: 0.28050038, b: 0.088579066, a: 0}
+    key3: {r: 0.7294118, g: 0.70980394, b: 0.6901961, a: 0}
+    key4: {r: 0.7294118, g: 0.70980394, b: 0.6901961, a: 0}
     key5: {r: 0.7294118, g: 0.70980394, b: 0.6901961, a: 0}
-    key6: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0.7294118, g: 0.70980394, b: 0.6901961, a: 0}
     key7: {r: 0, g: 0, b: 0, a: 0}
     ctime0: 0
-    ctime1: 19661
-    ctime2: 32768
-    ctime3: 43176
-    ctime4: 51079
+    ctime1: 964
+    ctime2: 3084
+    ctime3: 65535
+    ctime4: 65535
     ctime5: 65535
-    ctime6: 0
+    ctime6: 65535
     ctime7: 0
     atime0: 0
     atime1: 65535
@@ -411,7 +514,7 @@ MonoBehaviour:
     atime6: 0
     atime7: 0
     m_Mode: 0
-    m_NumColorKeys: 6
+    m_NumColorKeys: 2
     m_NumAlphaKeys: 2
   colorWidth: 1
   colorPos: 0

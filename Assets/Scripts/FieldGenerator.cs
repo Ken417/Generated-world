@@ -36,8 +36,8 @@ public class FieldGenerator : MonoBehaviour
     [Header("最大高度"), Range(0f, 1f), SerializeField]
     float maxHeight = 1;
 
-    [Header("最小高度"), Range(0f, 1f), SerializeField]
-    float minHeight = 0.4f;
+    [Header("最小高度"), Range(-0.5f,0), SerializeField]
+    float minHeight = -0.2f;
 
     [Header("最低高度にどれだけ元の高度をのせるか"), Range(0f, 1f), SerializeField]
     float minHeightRewind = 0.15f;
@@ -46,8 +46,6 @@ public class FieldGenerator : MonoBehaviour
     [Header("マスクを使うかどうか"), SerializeField]
     bool useMask = true;
 
-    [Header("全体Y軸の上下"), Range(-1f, 1f), SerializeField]
-    float verticesHeight = 0;
 
     [Header("パーリンノイズマスクのシード"), SerializeField]
     Vector2 pNoiseMaskSeed;
@@ -106,6 +104,7 @@ public class FieldGenerator : MonoBehaviour
             _mesh.name = "Surface Mesh";
             GetComponent<MeshFilter>().mesh = _mesh;
             GetComponent<MeshRenderer>().material = new Material(Shader.Find("Custom/Surface Shader"));
+            //GetComponent<MeshRenderer>().material.mainTexture = TextureGenerator.CreateParlinNoseTexture(resolution/2, resolution/2, perlinNoiseSeed, 30);
         }
         Refresh();
     }
@@ -151,7 +150,7 @@ public class FieldGenerator : MonoBehaviour
                 {
                     float xSample = ((float)x/ resolution + perlinNoiseSeed.x) * freq;
                     float zSample = ((float)z/ resolution + perlinNoiseSeed.y) * freq;
-                    sample += Mathf.PerlinNoise(xSample, zSample)* amplitude * maxHeight;
+                    sample += (Mathf.PerlinNoise(xSample, zSample)-0.5f)* amplitude * maxHeight;
 
                     freq *= lacunarity;
                     amplitude *= persistence;
@@ -194,7 +193,7 @@ public class FieldGenerator : MonoBehaviour
 
                 float xSample = ((float)x / resolution + pNoiseMaskSeed.x) * pNoiseMaskFrequency;
                 float zSample = ((float)z / resolution + pNoiseMaskSeed.y) * pNoiseMaskFrequency;
-                verticesMask[v].y += Mathf.PerlinNoise(xSample, zSample) * pNoiseMaskAmount;
+                verticesMask[v].y += (Mathf.PerlinNoise(xSample, zSample)-0.5f) * pNoiseMaskAmount;
 
                 //エッジマスク
                 float emWidth = edgeMaskWidth * ((float)resolution / defaultResolution);
@@ -229,8 +228,6 @@ public class FieldGenerator : MonoBehaviour
                         }
                     }
                 }
-
-                verticesMask[v].y += verticesHeight;
 
                 colors[v] = coloring.Evaluate(verticesMask[v].y * colorWidth+(colorPos/10));
             }
