@@ -6,13 +6,13 @@ public class Camera : MonoBehaviour
 {
     enum CameraMode
     {
-        FPS,
+        FPS = 0,
         TPS,
     }
 
     [Header("カメラのモード"), SerializeField]
     CameraMode cameraMode = CameraMode.FPS;
-    CameraMode currentCameraMode = cameraMode;
+    CameraMode currentCameraMode = CameraMode.FPS;
 
     GameObject character;
 
@@ -24,6 +24,7 @@ public class Camera : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        Refresh();
         character = transform.parent.parent.Find("Character").gameObject;
     }
 
@@ -34,12 +35,31 @@ public class Camera : MonoBehaviour
         character.transform.Rotate(0, -Input.GetAxis("Mouse X"), 0);
         transform.parent.Rotate(Input.GetAxis("Mouse Y") * -1, 0, 0);
 
+
+        if(Input.GetKeyDown(KeyCode.F5))
+        {
+            cameraMode = (CameraMode)((int)cameraMode ^ 1);
+        }
+        Refresh();
+
+    }
+
+    void Refresh()
+    {
         if (currentCameraMode != cameraMode)
         {
             currentCameraMode = cameraMode;
-            transform.localRotation = Quaternion.identity;
-            transform.localPosition += (transform.parent.forward) * tpsPos * cameraMoveVec;
-            cameraMoveVec *= -1;
+            if (cameraMode == CameraMode.FPS)
+            {
+                transform.localRotation = Quaternion.identity;
+                transform.localPosition = Vector3.zero;
+            }
+            else
+            {
+                transform.localRotation = Quaternion.Euler(tpsCameraAngle, 0, 0);
+                transform.localPosition = tpsCameraPos;
+            }
+
         }
     }
     //float tpsPos = 2;

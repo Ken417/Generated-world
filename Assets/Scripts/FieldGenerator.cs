@@ -106,8 +106,20 @@ public class FieldGenerator : MonoBehaviour
             GetComponent<MeshCollider>().sharedMesh = _mesh;
             GetComponent<MeshRenderer>().material = new Material(Shader.Find("Custom/Surface Shader"));
             //GetComponent<MeshRenderer>().material.mainTexture = TextureGenerator.CreateParlinNoseTexture(resolution/2, resolution/2, perlinNoiseSeed, 30);
+            //GetComponent<MeshRenderer>().material.mainTexture = TextureGenerator.CreateVoronoiDiagramTexture(100,100);
         }
         Refresh();
+    }
+
+    void Start()
+    {
+        GameObject.Find("TEST").GetComponent<MeshRenderer>().material.mainTexture = TextureGenerator.CreateVoronoiDiagramTexture(200, 200);
+
+        //これやらないとなぜか当たらない
+        {
+            GetComponent<MeshCollider>().enabled = false;
+            GetComponent<MeshCollider>().enabled = true;
+        }
     }
 
     // Update is called once per frame

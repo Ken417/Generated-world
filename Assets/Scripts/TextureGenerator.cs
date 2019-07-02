@@ -20,13 +20,76 @@ public class TextureGenerator : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    struct Voronoi
+    {
+        public Vector2 position;
+        public Color color;
+    }
+
+    public static Texture2D CreateVoronoiDiagramTexture(int width, int height)
+    {
+        List<Voronoi> list = new List<Voronoi>();
+        Voronoi v = new Voronoi();
+        Color[] colorMap = new Color[width * height];
+        int r = (width + height) / 2;
+        for (int i = 0, y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++, i++)
+            {
+                int point = Random.Range(0, r);
+                if(point >= r-1)
+                {
+                    v.position.x = x;
+                    v.position.y = y;
+                    v.color = Random.ColorHSV();
+                    v.color[Random.Range(0, 3)] = Random.Range(1f, 2f);
+                    list.Add(v);
+                    colorMap[i] = Color.black;
+                }
+                else
+                {
+                    colorMap[i] = Color.white;
+                }
+            }
+        }
+        Vector2 vec = Vector2.zero;
+        for (int i = 0, y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++, i++)
+            {
+                if(colorMap[i] == Color.white)
+                {
+                    Voronoi min = new Voronoi();
+                    min.position = new Vector2(width + 1, height + 1);
+                    foreach(Voronoi p in list)
+                    {
+                        vec.x = x;
+                        vec.y = y;
+                        if ((p.position - vec).magnitude < (min.position- vec).magnitude)
+                        {
+                            min = p;
+                        }
+                    }
+                    colorMap[i] = min.color;
+                }
+            }
+        }
+        Texture2D texture = new Texture2D(width, height);
+
+        texture.SetPixels(colorMap);
+        texture.Apply();
+
+        _lastUsedParlinNoiseTexture = texture;
+
+        return texture;
     }
 
     public static Texture2D CreateParlinNoseTexture(int width,int height,Vector2 seed,float freq)
