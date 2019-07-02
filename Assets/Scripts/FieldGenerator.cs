@@ -107,6 +107,9 @@ public class FieldGenerator : MonoBehaviour
             GetComponent<MeshRenderer>().material = new Material(Shader.Find("Custom/Surface Shader"));
             //GetComponent<MeshRenderer>().material.mainTexture = TextureGenerator.CreateParlinNoseTexture(resolution/2, resolution/2, perlinNoiseSeed, 30);
             //GetComponent<MeshRenderer>().material.mainTexture = TextureGenerator.CreateVoronoiDiagramTexture(100,100);
+            GetComponent<MeshRenderer>().material.mainTexture = TextureGenerator.CreateValueNoiseTexture(100,100);
+            GetComponent<MeshRenderer>().material.SetTexture("_ValueNoiseTex",TextureGenerator.CreateValueNoiseTexture(100,100));
+            GetComponent<MeshRenderer>().material.SetTexture("_ParlinNoiseTex", TextureGenerator.CreateParlinNoiseTexture(100,100, perlinNoiseSeed, 30));
         }
         Refresh();
     }

@@ -1,27 +1,29 @@
 ﻿Shader "Custom/Surface Shader" {
-	Properties {
-		_MainTex ("Base (RGB)", 2D) = "white" {}
+	Properties{
+		_ValueNoiseTex("バリューノイズ", 2D) = "white" {}
+		_ParlinNoiseTex("パーリンノイズ", 2D) = "white" {}
 	}
-	SubShader {
-		Tags { "RenderType"="Opaque" }
-		LOD 200
-		
-		CGPROGRAM
-		#pragma surface surf Lambert
+		SubShader{
+			Tags { "RenderType" = "Opaque" }
+			LOD 200
 
-		sampler2D _MainTex;
+			CGPROGRAM
+			#pragma surface surf Lambert
 
-		struct Input {
-			float2 uv_MainTex;
-			half4 color : COLOR;
-		};
+			sampler2D _ValueNoiseTex;
+			sampler2D _ParlinNoiseTex;
 
-		void surf (Input IN, inout SurfaceOutput o) {
-			half4 c = tex2D (_MainTex, IN.uv_MainTex);
-			o.Albedo = c.rgb * IN.color.rgb;
-			o.Alpha = c.a * IN.color.a;
-		}
-		ENDCG
-	} 
-	FallBack "Diffuse"
+			struct Input {
+				float2 uv_MainTex;
+				half4 color : COLOR;
+			};
+
+			void surf(Input IN, inout SurfaceOutput o) {
+				half4 c = tex2D(_ParlinNoiseTex, IN.uv_MainTex * 10000);
+				o.Albedo = c.rgb * IN.color.rgb;
+				o.Alpha = c.a * IN.color.a;
+			}
+			ENDCG
+	}
+		FallBack "Diffuse"
 }

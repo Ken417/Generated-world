@@ -11,7 +11,7 @@ public class TextureGenerator : MonoBehaviour
         {
             if(!_lastUsedParlinNoiseTexture)
             {
-                CreateParlinNoseTexture(100,100,new Vector2(Random.value, Random.value),30);
+                CreateParlinNoiseTexture(100,100,new Vector2(Random.value, Random.value),30);
             }
             return _lastUsedParlinNoiseTexture;
         }
@@ -92,7 +92,7 @@ public class TextureGenerator : MonoBehaviour
         return texture;
     }
 
-    public static Texture2D CreateParlinNoseTexture(int width,int height,Vector2 seed,float freq)
+    public static Texture2D CreateParlinNoiseTexture(int width,int height,Vector2 seed,float freq)
     {
         Color[] colorMap = new Color[width * height];
         for (int i = 0, y = 0; y < height; y++)
@@ -106,6 +106,26 @@ public class TextureGenerator : MonoBehaviour
             }
         }
         Texture2D texture = new Texture2D(width,height);
+
+        texture.SetPixels(colorMap);
+        texture.Apply();
+
+        _lastUsedParlinNoiseTexture = texture;
+
+        return texture;
+    }
+    public static Texture2D CreateValueNoiseTexture(int width, int height)
+    {
+        Color[] colorMap = new Color[width * height];
+        for (int i = 0, y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++, i++)
+            {
+                float noise = Random.Range(0f,1f); ;
+                colorMap[i] = new Color(noise, noise, noise, 1);
+            }
+        }
+        Texture2D texture = new Texture2D(width, height);
 
         texture.SetPixels(colorMap);
         texture.Apply();
