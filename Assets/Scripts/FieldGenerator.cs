@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-[RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]//自動でコンポーネントをアタッチしてくれる
+[RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider))]//自動でコンポーネントをアタッチしてくれる
 public class FieldGenerator : MonoBehaviour
 {
     const int defaultResolution = 100;//基本resolution
@@ -103,6 +103,7 @@ public class FieldGenerator : MonoBehaviour
             _mesh = new Mesh();
             _mesh.name = "Surface Mesh";
             GetComponent<MeshFilter>().mesh = _mesh;
+            GetComponent<MeshCollider>().sharedMesh = _mesh;
             GetComponent<MeshRenderer>().material = new Material(Shader.Find("Custom/Surface Shader"));
             //GetComponent<MeshRenderer>().material.mainTexture = TextureGenerator.CreateParlinNoseTexture(resolution/2, resolution/2, perlinNoiseSeed, 30);
         }
