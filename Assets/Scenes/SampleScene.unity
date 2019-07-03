@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.4465782, g: 0.49641252, b: 0.5748167, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -525,6 +525,7 @@ MonoBehaviour:
     m_Mode: 0
     m_NumColorKeys: 5
     m_NumAlphaKeys: 2
+  sandColor: {r: 0, g: 0, b: 0, a: 0}
   colorWidth: 1
   colorPos: 0
 --- !u!23 &753137443
@@ -604,7 +605,7 @@ MonoBehaviour:
   edgeMaskAmount: 0
   coloring:
     serializedVersion: 2
-    key0: {r: 0.52156866, g: 0.57254905, b: 0.53333336, a: 1}
+    key0: {r: 0.9056604, g: 0.8082633, b: 0.5596298, a: 1}
     key1: {r: 0.18064368, g: 0.28050038, b: 0.088579066, a: 1}
     key2: {r: 0.18064368, g: 0.28050038, b: 0.088579066, a: 0}
     key3: {r: 0.7294118, g: 0.70980394, b: 0.6901961, a: 0}
@@ -631,6 +632,7 @@ MonoBehaviour:
     m_Mode: 0
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
+  sandColor: {r: 0, g: 0, b: 0, a: 0}
   colorWidth: 1
   colorPos: 0
 --- !u!114 &753137446
