@@ -155,6 +155,7 @@ public class FieldGenerator : MonoBehaviour
         _mesh.colors = colors;
         _mesh.RecalculateNormals();
         GetComponent<MeshCollider>().sharedMesh = _mesh;
+        GameObject.Find("TreeManager").GetComponent<TreeManager>().SetTree();
     }
 
     void AddPerlinNoise()

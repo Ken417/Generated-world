@@ -6,7 +6,7 @@ public class PlayerManager : MonoBehaviour
 {
     // Start is called before the first frame update
     Move move;
-    Camera camera;
+    PlayerCamera cam;
 
     [Header("Move Script on/off"), SerializeField]
     bool useMoveScript = true;
@@ -18,7 +18,7 @@ public class PlayerManager : MonoBehaviour
     void Start()
     {
         move = GetComponent<Move>();
-        camera = GameObject.Find("Main Camera").GetComponent<Camera>();
+        cam = GameObject.Find("Main Camera").GetComponent<PlayerCamera>();
     }
 
     // Update is called once per frame
@@ -28,9 +28,9 @@ public class PlayerManager : MonoBehaviour
         {
             move.enabled = useMoveScript;
         }
-        if (camera.enabled != useCameraScript)
+        if (cam.enabled != useCameraScript)
         {
-            camera.enabled = useCameraScript;
+            cam.enabled = useCameraScript;
         }
         
     }
