@@ -75,13 +75,6 @@ public class FieldGenerator : MonoBehaviour
     [Header("砂の色"), SerializeField]
     Color sandColor;
 
-
-    [Header("山の色の幅"), SerializeField]
-    float colorWidth = 1;
-
-    [Header("山の色位置"), SerializeField]
-    float colorPos = 0;
-
     float minVertices = 1;
     float maxVertices = 0;
 
@@ -149,6 +142,8 @@ public class FieldGenerator : MonoBehaviour
         {
             AddPerlinNoise();
         }
+        SetColor();
+        _mesh.colors = colors;
         _mesh.RecalculateNormals();
     }
 
@@ -185,32 +180,62 @@ public class FieldGenerator : MonoBehaviour
                 }
 
                 vertices[v].y = sample;
-                //colors[v] = coloring.Evaluate(sample*colorWidth+(colorPos/10));
+                colors[v] = coloring.Evaluate(sample/ maxHeight + 0.5f);
             }
         }
 
         _mesh.vertices = vertices;
-        _mesh.colors = colors;
     }
 
 
     void SetColor()
     {
-        int r = 3;
-        for (int v1 = 0, z1 = 0; z1 < resolution; z1++)
+        int r = 5;
+        float hightRange = 0.01f;//砂浜判定
+        for (int v = 0, z1 = 0; z1 <= resolution; z1++)
         {
-            for (int x1 = 0; x1 < resolution; x1++, v1++)
+            for (int x1 = 0; x1 <= resolution; x1++, v++)
             {
-                for (int v2 = 0, z2 = (z1 - r) ; z2 < r*2; z2++)
-                {
-                    for (int x2 = (x1 - r); x2 < r*2; x2++, v2++)
-                    {
-                        if ((x2 - x1) * (x2 - x1) + (z2 -z1) * (z2 - z1) < r)
-                        {
+                float py = vertices[v].y;
 
+                if (py > 0.1f || colors[v] == Color.white) {continue;}
+
+                int nearSea = 0;
+                int checkPointNum = 0;
+                int clearPointNum = 0;
+
+                for (int z2 = (z1 - r) < 0 ? 0 : (z1 - r) ; z2 < (z1 + r) && z2 <= resolution; z2++)
+                {
+                    for (int x2 = (x1 - r) < 0 ? 0 : (x1 - r); x2 < (x2+r) && x2 <= resolution; x2++)
+                    {
+                        if ((x2 - x1) * (x2 - x1) + (z2 -z1) * (z2 - z1) < r*r)
+                        {
+                            checkPointNum++;
+                            if (vertices[z2 * resolution + x2].y<=0)
+                            {
+                                nearSea++;
+                            }
+                            if (Mathf.Abs(py - vertices[z2* resolution + x2].y)< hightRange)
+                            {
+                                clearPointNum++;
+                            }
                         }
                     }
                 }
+                if ((float)checkPointNum / clearPointNum == 1.0f)
+                {
+                    if (nearSea > r)
+                    {
+                        colors[v] = Color.white;
+                        colors[(z1) * resolution + (x1 + 1)] = Color.white;
+                        colors[(z1 + 1) * resolution + (x1)] = Color.white;
+                        colors[(z1 + 1) * resolution + (x1 + 1)] = Color.white;
+                    }
+                }
+                //else if ((float)checkPointNum / clearPointNum > 0.9f)
+                //{
+                //    colors[v] = Color.white;
+                //}
             }
         }
     }
@@ -270,11 +295,10 @@ public class FieldGenerator : MonoBehaviour
                     }
                 }
 
-                colors[v] = coloring.Evaluate(verticesMask[v].y * colorWidth+(colorPos/10));
+                //colors[v] = coloring.Evaluate(verticesMask[v].y * colorWidth+(colorPos/10));
             }
         }
         _mesh.vertices = verticesMask;
-        _mesh.colors = colors;
     }
 
 
@@ -318,35 +342,6 @@ public class FieldGenerator : MonoBehaviour
         _mesh.triangles = triangles;
     }
 
-    void PositionAdjustment()
-    {
-        for (int v = 0, z = 0; z <= resolution; z++)
-        {
-            for (int x = 0; x <= resolution; x++, v++)
-            {
-                if (minVertices > _mesh.vertices[v].y)
-                {
-                    minVertices = _mesh.vertices[v].y;
-                }
-                if (maxVertices < _mesh.vertices[v].y)
-                {
-                    maxVertices = _mesh.vertices[v].y;
-                }
-            }
-        }
-        for (int v = 0, z = 0; z <= resolution; z++)
-        {
-            for (int x = 0; x <= resolution; x++, v++)
-            {
-                float point = minVertices + maxVertices;
-                if(point != 0)
-                {
-                    vertices[v].y = _mesh.vertices[v].y - (point / 2);
-                }
-            }
-        }
-        _mesh.vertices = vertices;
-    }
 }
 
 [CustomEditor(typeof(FieldGenerator))]//拡張するクラスを指定
