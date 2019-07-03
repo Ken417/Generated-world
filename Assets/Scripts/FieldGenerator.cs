@@ -93,6 +93,8 @@ public class FieldGenerator : MonoBehaviour
     Vector3[] normals;
     Color[] colors;
 
+    bool update = true;
+
     void OnEnable()//コンポーネントがアクティブになったときに呼ばれる
     {
         if (_mesh == null)
@@ -100,12 +102,11 @@ public class FieldGenerator : MonoBehaviour
             _mesh = new Mesh();
             _mesh.name = "Surface Mesh";
             GetComponent<MeshFilter>().mesh = _mesh;
-            GetComponent<MeshCollider>().sharedMesh = _mesh;
             GetComponent<MeshRenderer>().material = new Material(Shader.Find("Custom/Surface Shader"));
             //GetComponent<MeshRenderer>().material.mainTexture = TextureGenerator.CreateParlinNoseTexture(resolution/2, resolution/2, perlinNoiseSeed, 30);
             //GetComponent<MeshRenderer>().material.mainTexture = TextureGenerator.CreateVoronoiDiagramTexture(100,100);
-            GetComponent<MeshRenderer>().material.mainTexture = TextureGenerator.CreateValueNoiseTexture(100,100);
-            GetComponent<MeshRenderer>().material.SetTexture("_ValueNoiseTex",TextureGenerator.CreateValueNoiseTexture(100,100));
+            GetComponent<MeshRenderer>().material.mainTexture = TextureGenerator.CreateRandomNoiseTexture(100,100);
+            GetComponent<MeshRenderer>().material.SetTexture("_ValueNoiseTex",TextureGenerator.CreateRandomNoiseTexture(100,100));
             GetComponent<MeshRenderer>().material.SetTexture("_ParlinNoiseTex", TextureGenerator.CreateParlinNoiseTexture(100,100, perlinNoiseSeed, 30));
         }
         Refresh();
@@ -125,9 +126,17 @@ public class FieldGenerator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Refresh();
+        if(update)
+        {
+            Refresh();
+            update = false;
+        }
     }
 
+    void OnValidate()
+    {
+        update = true;
+    }
     void Refresh()
     {
         if (resolution != currentResolution)
@@ -142,9 +151,10 @@ public class FieldGenerator : MonoBehaviour
         {
             AddPerlinNoise();
         }
-        SetColor();
+        BeachSearch();
         _mesh.colors = colors;
         _mesh.RecalculateNormals();
+        GetComponent<MeshCollider>().sharedMesh = _mesh;
     }
 
     void AddPerlinNoise()
@@ -188,54 +198,51 @@ public class FieldGenerator : MonoBehaviour
     }
 
 
-    void SetColor()
+    void BeachSearch()
     {
-        int r = 5;
-        float hightRange = 0.01f;//砂浜判定
-        for (int v = 0, z1 = 0; z1 <= resolution; z1++)
+        for (int z = 0; z <= resolution; z++)
         {
-            for (int x1 = 0; x1 <= resolution; x1++, v++)
+            for (int x = 0; x <= resolution; x++)
             {
-                float py = vertices[v].y;
+                int v = resolution;
+                colors[z * v + x] = Color.white;
 
-                if (py > 0.1f || colors[v] == Color.white) {continue;}
+                float py = vertices[z * v + x].y;
 
-                int nearSea = 0;
-                int checkPointNum = 0;
-                int clearPointNum = 0;
+                if (py > 0.01f) {continue;}
 
-                for (int z2 = (z1 - r) < 0 ? 0 : (z1 - r) ; z2 < (z1 + r) && z2 <= resolution; z2++)
+                Vector3 p1 = vertices[z * v + x];
+                Vector3 p2;
+                p2 = vertices[(z+1> v?z:z+ 1) * v + x];
+                float angle = Vector3.Angle(p1, p2);
+
+                p2 = vertices[z * v + (x + 1 > v ? x : x +1)];
+                angle += Vector3.Angle(p1, p2);
+
+                p2 = vertices[(z - 1 < 0 ? z : z - 1) * v + x];
+                angle += Vector3.Angle(p1, p2);
+
+                p2 = vertices[z * v + (x - 1 < 0 ? x :x - 1)];
+                angle += Vector3.Angle(p1, p2);
+
+
+                p2 = vertices[(z + 1 > v ? z : z + 1) * v + (x - 1 < 0 ? x : x - 1)];
+                angle += Vector3.Angle(p1, p2);
+
+                p2 = vertices[(z + 1 > v ? z : z + 1) * v + (x + 1 > v ? x : x + 1)];
+                angle += Vector3.Angle(p1, p2);
+
+                p2 = vertices[(z - 1 < 0 ? z : z - 1) * v + (x - 1 < 0 ? x : x - 1)];
+                angle += Vector3.Angle(p1, p2);
+
+                p2 = vertices[(z - 1 < 0 ? z : z - 1) * v + (x + 1 > v ? x : x + 1)];
+                angle += Vector3.Angle(p1, p2);
+
+
+                if (angle/8 < 3)
                 {
-                    for (int x2 = (x1 - r) < 0 ? 0 : (x1 - r); x2 < (x2+r) && x2 <= resolution; x2++)
-                    {
-                        if ((x2 - x1) * (x2 - x1) + (z2 -z1) * (z2 - z1) < r*r)
-                        {
-                            checkPointNum++;
-                            if (vertices[z2 * resolution + x2].y<=0)
-                            {
-                                nearSea++;
-                            }
-                            if (Mathf.Abs(py - vertices[z2* resolution + x2].y)< hightRange)
-                            {
-                                clearPointNum++;
-                            }
-                        }
-                    }
+                    colors[z * v + x] = Color.black;
                 }
-                if ((float)checkPointNum / clearPointNum == 1.0f)
-                {
-                    if (nearSea > r)
-                    {
-                        colors[v] = Color.white;
-                        colors[(z1) * resolution + (x1 + 1)] = Color.white;
-                        colors[(z1 + 1) * resolution + (x1)] = Color.white;
-                        colors[(z1 + 1) * resolution + (x1 + 1)] = Color.white;
-                    }
-                }
-                //else if ((float)checkPointNum / clearPointNum > 0.9f)
-                //{
-                //    colors[v] = Color.white;
-                //}
             }
         }
     }

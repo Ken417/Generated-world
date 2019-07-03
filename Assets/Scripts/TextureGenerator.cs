@@ -114,7 +114,7 @@ public class TextureGenerator : MonoBehaviour
 
         return texture;
     }
-    public static Texture2D CreateValueNoiseTexture(int width, int height)
+    public static Texture2D CreateRandomNoiseTexture(int width, int height)
     {
         Color[] colorMap = new Color[width * height];
         for (int i = 0, y = 0; y < height; y++)
