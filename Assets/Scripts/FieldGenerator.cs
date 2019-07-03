@@ -72,6 +72,10 @@ public class FieldGenerator : MonoBehaviour
     [Header("山の色"), SerializeField]
     Gradient coloring;
 
+    [Header("砂の色"), SerializeField]
+    Color sandColor;
+
+
     [Header("山の色の幅"), SerializeField]
     float colorWidth = 1;
 
@@ -181,7 +185,7 @@ public class FieldGenerator : MonoBehaviour
                 }
 
                 vertices[v].y = sample;
-                colors[v] = coloring.Evaluate(sample*colorWidth+(colorPos/10));
+                //colors[v] = coloring.Evaluate(sample*colorWidth+(colorPos/10));
             }
         }
 
@@ -189,6 +193,27 @@ public class FieldGenerator : MonoBehaviour
         _mesh.colors = colors;
     }
 
+
+    void SetColor()
+    {
+        int r = 3;
+        for (int v1 = 0, z1 = 0; z1 < resolution; z1++)
+        {
+            for (int x1 = 0; x1 < resolution; x1++, v1++)
+            {
+                for (int v2 = 0, z2 = (z1 - r) ; z2 < r*2; z2++)
+                {
+                    for (int x2 = (x1 - r); x2 < r*2; x2++, v2++)
+                    {
+                        if ((x2 - x1) * (x2 - x1) + (z2 -z1) * (z2 - z1) < r)
+                        {
+
+                        }
+                    }
+                }
+            }
+        }
+    }
     void AddMask()
     {
         verticesMask = vertices;

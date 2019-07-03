@@ -19,7 +19,10 @@
 			};
 
 			void surf(Input IN, inout SurfaceOutput o) {
-				half4 c = tex2D(_ParlinNoiseTex, IN.uv_MainTex * 10000);
+
+				half4 c = tex2D(_ValueNoiseTex, IN.uv_MainTex * 10000);
+				c += tex2D(_ValueNoiseTex, IN.uv_MainTex * 1000);
+				c /= 2;
 				o.Albedo = c.rgb * IN.color.rgb;
 				o.Alpha = c.a * IN.color.a;
 			}
