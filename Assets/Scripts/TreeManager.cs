@@ -37,52 +37,69 @@ public class TreeManager : MonoBehaviour
 
                     GameObject tree;
 
-                    if (colors[v] == Color.black)
-                    {
-                        tree = Instantiate(palm);
-                    }
-                    else
-                    {
-                        tree = Instantiate(broadleaf);
-                    }
 
-                    Vector3 o = vertices[v] *10000;
-                    o.x += Random.Range(0, 50);
-                    o.z += Random.Range(0, 50);
+                    Vector3 p = vertices[v] *10000;
+                    p.x += Random.Range(0, 50);
+                    p.z += Random.Range(0, 50);
 
                     Vector3 a,b,c;
                     a = vertices[v] * 10000;
-                    b = vertices[v+1] * 10000;
-                    c = vertices[v+res+1] * 10000;
-                    Vector3 ab, bc;
-                    ab = b - a;
-                    bc = c - b;
-                    Vector3 n = Vector3.Cross(ab,bc);
-                    if (n.y<0) { n *= -1; }
-                    float height = a.y - (1 / n.y) * (n.x * (o.x - a.x) + n.z(o.z - a.z));
-
-                    pos1 = pos2 = vertices[v] * 10000;
-                    pos2.x += Random.Range(0, 50);
-                    pos2.z += Random.Range(0, 50);
+                    b = vertices[v + res + 1] * 10000;
 
 
+                    for (int j =0;j<2; j++)
+                    {
+                        c = vertices[v+ (j* res) + (1 - j)] * 10000;
+                        Vector2 p2, a2, b2, c2;
+                        p2 = new Vector2(p.x, p.z);
+                        a2 = new Vector2(a.x, a.z);
+                        b2 = new Vector2(b.x, b.z);
+                        c2 = new Vector2(c.x, c.z);
 
-                    tree.SetActive(true);
-                    tree.transform.position = vertices[v] * 10000;
-                    addPos.x = Random.Range(0, 50);
-                    addPos.z = Random.Range(0, 50);
-                    addPos.y = 0;
-                    float angle = Vector3.Angle(tree.transform.position, vertices[v+1] * 10000);
-                    angle += Vector3.Angle(tree.transform.position, vertices[v+res] * 10000);
-                    angle /= 2;
-                    float mag = ((tree.transform.position + addPos) - tree.transform.position).magnitude;
-                    addPos += tree.transform.position;
-                    addPos.y = Mathf.Tan(angle * Mathf.Deg2Rad) * mag;
-                    tree.transform.position = addPos;
-                    tree.transform.parent = transform;
-                    pos.Add(tree.transform.position);
+                        //if (PointInTriangle(p2, a2, b2, c2))
+                        {
+                            Vector3 ab, bc;
+                            ab = b - a;
+                            bc = c - b;
+                            Vector3 n = Vector3.Cross(ab, bc);
+                            if (n.y < 0) { n *= -1; }
+                            p.y = a.y - (1 / n.y) * (n.x * (p.x - a.x) + n.z * (p.z - a.z));
+
+                            if(p.y>0)
+                            {
+                                if (colors[v] == Color.black)
+                                {
+                                    tree = Instantiate(palm);
+                                }
+                                else
+                                {
+                                    tree = Instantiate(broadleaf);
+                                }
+                                tree.SetActive(true);
+                                tree.transform.position = p;
+                                tree.transform.parent = transform;
+                                pos.Add(p);
+                            }
+
+                            break;
+                        }
+                    }
                 }
             }
         }
+    }
+
+    float Vec2Cross(Vector2 v1, Vector2 v2)
+    {
+        return(v1.x* v2.y -v1.y * v2.x);
+    }
+
+    bool PointInTriangle(Vector2 p, Vector2 a, Vector2 b , Vector2 c)
+    {
+        float v1 = Vec2Cross(c - b, p - c);
+        float v2 = Vec2Cross(b - a, p - b);
+        float v3 = Vec2Cross(a - c, p - a);
+
+        return (v1 == v2) && (v2 == v3);
     }
 }
