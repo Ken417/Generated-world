@@ -607,6 +607,7 @@ MonoBehaviour:
   maxHeight: 0.16
   minHeight: -0.2
   minHeightRewind: 0.15
+  useTree: 0
   useMask: 1
   pNoiseMaskSeed: {x: 0, y: 0}
   pNoiseMaskFrequency: 3

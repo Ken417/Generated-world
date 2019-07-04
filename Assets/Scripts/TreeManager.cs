@@ -56,7 +56,7 @@ public class TreeManager : MonoBehaviour
                         b2 = new Vector2(b.x, b.z);
                         c2 = new Vector2(c.x, c.z);
 
-                        //if (PointInTriangle(p2, a2, b2, c2))
+                        if (PointInTriangle(p2, a2, b2, c2))
                         {
                             Vector3 ab, bc;
                             ab = b - a;
@@ -96,10 +96,10 @@ public class TreeManager : MonoBehaviour
 
     bool PointInTriangle(Vector2 p, Vector2 a, Vector2 b , Vector2 c)
     {
-        float v1 = Vec2Cross(c - b, p - c);
-        float v2 = Vec2Cross(b - a, p - b);
-        float v3 = Vec2Cross(a - c, p - a);
+        bool b1 = Vec2Cross(c - b, p - c) > 0.0f;
+        bool b2 = Vec2Cross(b - a, p - b) > 0.0f;
+        bool b3 = Vec2Cross(a - c, p - a) > 0.0f;
 
-        return (v1 == v2) && (v2 == v3);
+        return (b1 == b2) && (b2 == b3);
     }
 }
