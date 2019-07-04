@@ -2,7 +2,12 @@ fileFormatVersion: 2
 guid: 73f9db4322304ad4486b2c96712b8acf
 ShaderImporter:
   externalObjects: {}
-  defaultTextures: []
+  defaultTextures:
+  - _GrassTex: {fileID: 2800000, guid: c6e0767b1f8c34890ac245217f4b9731, type: 3}
+  - _SandTex: {fileID: 2800000, guid: bfd675cc0db1d4656b75dc6d6ba91142, type: 3}
+  - _CliffTex: {fileID: 2800000, guid: 18214e9d6af6248559d501391856f1c7, type: 3}
+  - _ValueNoiseTex: {instanceID: 0}
+  - _ParlinNoiseTex: {instanceID: 0}
   nonModifiableTextures: []
   userData: 
   assetBundleName: 

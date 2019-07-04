@@ -43,6 +43,9 @@ public class FieldGenerator : MonoBehaviour
     float minHeightRewind = 0.15f;
 
 
+    [Header("木を生やすかどうか"), SerializeField]
+    bool useTree = false;
+
     [Header("マスクを使うかどうか"), SerializeField]
     bool useMask = true;
 
@@ -151,11 +154,15 @@ public class FieldGenerator : MonoBehaviour
         {
             AddPerlinNoise();
         }
-        BeachSearch();
+        SetRegion();
         _mesh.colors = colors;
         _mesh.RecalculateNormals();
         GetComponent<MeshCollider>().sharedMesh = _mesh;
-        GameObject.Find("TreeManager").GetComponent<TreeManager>().SetTree();
+        
+        if(useTree)
+        {
+            GameObject.Find("TreeManager").GetComponent<TreeManager>().SetTree();
+        }
     }
 
     void AddPerlinNoise()
@@ -199,16 +206,32 @@ public class FieldGenerator : MonoBehaviour
     }
 
 
-    void BeachSearch()
+    void SetRegion()
     {
         for (int z = 0; z <= resolution; z++)
         {
             for (int x = 0; x <= resolution; x++)
             {
                 int v = resolution;
-                colors[z * v + x] = Color.white;
-
                 float py = vertices[z * v + x].y;
+
+                //岩
+                if (-0.01f>py)
+                {
+                    colors[z * v + x] = new Color(0, 1, 0, 0);
+                    continue;
+                }
+
+                //丘
+                if(py < 0)
+                {
+                    colors[z * v + x] = new Color(0, 1, 0, 0);
+                }
+                else
+                {
+                    colors[z * v + x] = new Color(1, 0, 0, 0);
+                }
+
 
                 if (py > 0.01f) {continue;}
 
@@ -239,10 +262,16 @@ public class FieldGenerator : MonoBehaviour
                 p2 = vertices[(z - 1 < 0 ? z : z - 1) * v + (x + 1 > v ? x : x + 1)];
                 angle += Vector3.Angle(p1, p2);
 
-
-                if (angle/8 < 3)
+                //浜
+                if (angle/8 < 2)
                 {
                     colors[z * v + x] = Color.black;
+                }
+
+                //岩
+                if (angle / 8 > 5)
+                {
+                    colors[z * v + x] = new Color(0, 1, 0, 0);
                 }
             }
         }
