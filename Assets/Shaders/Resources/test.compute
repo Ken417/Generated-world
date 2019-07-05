@@ -1,0 +1,104 @@
+﻿#pragma kernel CSMain
+
+RWTexture2D< float4 > tex;
+
+float w, h;
+
+int re;
+float fr;
+
+const float PI = 3.141592653589793238462;
+
+//float rand(float2 c)
+//{
+//	return frac(sin(dot(c.xy, float2(12.9898, 78.233))) * 43758.5453);
+//}
+
+//float noise(float2 p, float freq)
+//{
+//	float unit = w / freq;
+//	float2 ij = floor(p / unit);
+//	float2 xy = fmod(p, unit) / unit;
+//	//xy = 3.*xy*xy-2.*xy*xy*xy;
+//	xy = .5 * (1. - cos(PI * xy));
+//	float a = rand((ij + float2(0., 0.)));
+//	float b = rand((ij + float2(1., 0.)));
+//	float c = rand((ij + float2(0., 1.)));
+//	float d = rand((ij + float2(1., 1.)));
+//	float x1 = lerp(a, b, xy.x);
+//	float x2 = lerp(c, d, xy.x);
+//	return lerp(x1, x2, xy.y);
+//}
+
+float rand(float2 co) { return frac(sin(dot(co.xy, float2(12.9898, 78.233))) * 43758.5453); }
+float rand(float2 co, float l) { return rand(float2(rand(co), l)); }
+float rand(float2 co, float l, float t) { return rand(float2(rand(co, l), t)); }
+
+float perlin(float2 p, float dim, float time) {
+	float2 pos = floor(p * dim);
+	float2 posx = pos + float2(1.0, 0.0);
+	float2 posy = pos + float2(0.0, 1.0);
+	float2 posxy = pos + float2(1.0, 1.0);
+
+	float c = rand(pos, dim, time);
+	float cx = rand(posx, dim, time);
+	float cy = rand(posy, dim, time);
+	float cxy = rand(posxy, dim, time);
+
+	float2 d = frac(p * dim);
+	d = -0.5 * cos(d * PI) + 0.5;
+
+	float ccx = lerp(c, cx, d.x);
+	float cycxy = lerp(cy, cxy, d.x);
+	float center = lerp(ccx, cycxy, d.y);
+
+	return center * 2.0 - 1.0;
+}
+
+// p must be normalized!
+//float perlin(vec2 p, float dim)
+//{
+//	return perlin(p, dim, 0.0);
+//}
+
+[numthreads(8 , 8, 1)]
+void CSMain(uint3 id : SV_DispatchThreadID)
+{
+	float2 c = float2(id.x / w, id.y / h);
+
+	//float f = noise(c, fr);
+	float f = perlin(c,re,fr);
+
+	tex[id.xy] = float4(f,f,f, 1);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//// Each #kernel tells which function to compile; you can have many kernels
+//#pragma kernel CSMain
+//
+//// Create a RenderTexture with enableRandomWrite flag and set it
+//// with cs.SetTexture
+//RWTexture2D<float4> Result;
+//
+//[numthreads(8,8,1)]
+//void CSMain (uint3 id : SV_DispatchThreadID)
+//{
+//    // TODO: insert actual code here!
+//
+//    Result[id.xy] = float4(id.x & id.y, (id.x & 15)/15.0, (id.y & 15)/15.0, 0.0);
+//}

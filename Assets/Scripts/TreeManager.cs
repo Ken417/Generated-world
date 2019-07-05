@@ -16,7 +16,11 @@ public class TreeManager : MonoBehaviour
         palm = transform.Find("Palm_Desktop").gameObject;
         conifer = transform.Find("Conifer_Desktop").gameObject;
         broadleaf = transform.Find("Broadleaf_Desktop").gameObject;
-        fg = GameObject.Find("Field").GetComponent<FieldGenerator>();
+        var gfg = GameObject.Find("Field");
+        if (gfg)
+        {
+            fg = GameObject.Find("Field").GetComponent<FieldGenerator>();
+        }
     }
 
     public void SetTree()

@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class TextureGenerator : MonoBehaviour
@@ -114,6 +113,7 @@ public class TextureGenerator : MonoBehaviour
 
         return texture;
     }
+
     public static Texture2D CreateRandomNoiseTexture(int width, int height)
     {
         Color[] colorMap = new Color[width * height];
