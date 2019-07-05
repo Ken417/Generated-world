@@ -1,0 +1,55 @@
+﻿#pragma kernel VoronoiNoise
+
+RWTexture2D< float4 > resultTex;
+RWStructuredBuffer<float> resultBuf;
+
+float width, height;
+
+float2 seed;
+
+float frequency;
+float octaves;
+float lacunarity;
+float persistence;
+
+const float2x2 myt = float2x2(.12121212, .13131313, -.13131313, .12121212);
+const float2 mys = float2(1e4, 1e6);
+
+float2 rhash(float2 uv) {
+	uv = mul(uv,myt);
+	uv *= mys;
+	return frac(frac(uv / mys) * uv);
+}
+
+float3 hash(float3 p) {
+	return frac(sin(float3(dot(p, float3(1.0, 57.0, 113.0)),
+		dot(p, float3(57.0, 113.0, 1.0)),
+		dot(p, float3(113.0, 1.0, 57.0)))) *
+		43758.5453);
+}
+
+float voronoi2d(float2 po) {
+	float2 p = floor(po);
+	float2 f = frac(po);
+	float res = 0.0;
+	for (int j = -1; j <= 1; j++) {
+		for (int i = -1; i <= 1; i++) {
+			float2 b = float2(i, j);
+			float2 r = float2(b) - f + rhash(p + b);
+			res += 1. / pow(dot(r, r), 8.);
+		}
+	}
+	return pow(abs(1. / res), 0.0625);
+}
+
+[numthreads(8, 8, 1)]
+void VoronoiNoise(uint2 id : SV_DispatchThreadID)
+{
+	resultTex.GetDimensions(width, height);
+
+	float2 c = float2(id.x / width, id.y / height);
+
+	float pn = voronoi2d(c* frequency);
+
+	resultTex[id] = float4(pn, pn, pn, 1);
+}

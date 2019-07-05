@@ -1,30 +1,42 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class TextureGenerator : MonoBehaviour
 {
-    static Texture2D _lastUsedParlinNoiseTexture = null;
-    public static Texture2D lastUsedParlinNoiseTexture
+    static ComputeShader perlinNoise = null;
+
+    //コンピュートシェーダーでテクスチャを作る場合
+    public static RenderTexture CreateTextureForCompute(int width, int height, RenderTextureFormat format = RenderTextureFormat.Default)
     {
-        get
+        RenderTexture tex = new RenderTexture(width, height, 0, format);
+        tex.enableRandomWrite = true;
+        tex.Create();
+        return tex;
+    }
+
+    static Dictionary<RenderTexture, AsyncGPUReadbackRequest> waitingConversionTex = new Dictionary<RenderTexture, AsyncGPUReadbackRequest>();
+    //RenderTextureをTexture2Dに変えたいときにここに登録
+    static void RegistAsyncGPUReadback(RenderTexture rt)
+    {
+        if (waitingConversionTex.Equals(rt)) {return; }
+        AsyncGPUReadbackRequest reqest = AsyncGPUReadback.Request(rt);
+        waitingConversionTex.Add(rt, reqest);
+    }
+
+    //RenderTextureをTexture2Dに変えたいときに登録したものができていればTexture2Dを返す。
+    static Texture2D GetTexture2D_ByAsyncGPUReadback(RenderTexture rt)
+    {
+        if(waitingConversionTex[rt].done)
         {
-            if(!_lastUsedParlinNoiseTexture)
-            {
-                CreateParlinNoiseTexture(100,100,new Vector2(Random.value, Random.value),30);
-            }
-            return _lastUsedParlinNoiseTexture;
+            Texture2D tex = new Texture2D(rt.width,rt.height);
+            Unity.Collections.NativeArray<Color32> buffer = waitingConversionTex[rt].GetData<Color32>();
+            tex.LoadRawTextureData(buffer);
+            tex.Apply();
+            waitingConversionTex.Remove(rt);
+            return tex;
         }
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        return null;
     }
 
     struct Voronoi
@@ -86,32 +98,32 @@ public class TextureGenerator : MonoBehaviour
         texture.SetPixels(colorMap);
         texture.Apply();
 
-        _lastUsedParlinNoiseTexture = texture;
 
         return texture;
     }
 
-    public static Texture2D CreateParlinNoiseTexture(int width,int height,Vector2 seed,float freq)
+    public static void RenderParlinNoise(
+        RenderTexture rt, 
+        Vector2 seed,
+        float freq,
+        float octaves,
+        float lacunarity,
+        float persistence
+        )
     {
-        Color[] colorMap = new Color[width * height];
-        for (int i = 0, y = 0; y < height; y++)
+        if(perlinNoise==null)
         {
-            for (int x = 0; x < width; x++, i++)
-            {
-                float xSample = ((float)x/ width + seed.x) * freq;
-                float zSample = ((float)y / height + seed.y) * freq;
-                float noise = Mathf.PerlinNoise(xSample, zSample);
-                colorMap[i] = new Color(noise, noise, noise, 1);
-            }
+            perlinNoise = Resources.Load<ComputeShader>("PerlinNoise");
         }
-        Texture2D texture = new Texture2D(width,height);
+        perlinNoise.SetFloat("frequency", freq);
+        perlinNoise.SetFloat("octaves", octaves);
+        perlinNoise.SetFloat("lacunarity", lacunarity);
+        perlinNoise.SetFloat("persistence", persistence);
 
-        texture.SetPixels(colorMap);
-        texture.Apply();
+        int kernelID = perlinNoise.FindKernel("PerlinNoise2DTex");
+        perlinNoise.SetTexture(kernelID,"resultTex",rt);
+        perlinNoise.Dispatch(kernelID, rt.width, rt.height, 1);
 
-        _lastUsedParlinNoiseTexture = texture;
-
-        return texture;
     }
 
     public static Texture2D CreateRandomNoiseTexture(int width, int height)
@@ -129,8 +141,6 @@ public class TextureGenerator : MonoBehaviour
 
         texture.SetPixels(colorMap);
         texture.Apply();
-
-        _lastUsedParlinNoiseTexture = texture;
 
         return texture;
     }

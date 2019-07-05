@@ -13,22 +13,26 @@ public class NoiseArray : MonoBehaviour
 
     }
 
-    public static float[,] GetParlinNoiseArray(int width, int height, Vector2 seed, float freq)
-    {
-        float[,] result = new float[width,height];
-        ComputeShader shader = Resources.Load<ComputeShader>("ParlinNoise");
-        shader.SetFloat("width", width);
-        shader.SetFloat("height", height);
+    //public static float[,] GetParlinNoiseArray(int width, int height, Vector2 seed, float freq)
+    //{
+    //    float[,] result = new float[width,height];
+    //    ComputeShader shader = Resources.Load<ComputeShader>("PerlinNoise");
+    //    shader.SetFloat("width", width);
+    //    shader.SetFloat("height", height);
+    //    shader.SetFloat("frequency", freq);
+    //    shader.SetFloat("octaves", 0);
+    //    shader.SetFloat("lacunarity", 2);
+    //    shader.SetFloat("persistence", 0.6f);
 
-        int num = width * height;
-        ComputeBuffer buffer = new ComputeBuffer(num, sizeof(float));
+    //    int num = width * height;
+    //    ComputeBuffer buffer = new ComputeBuffer(num, sizeof(float));
 
-        int kernelID = shader.FindKernel("CSMain");
-        shader.SetBuffer(kernelID, "result", buffer);
-        shader.Dispatch(kernelID, width,height, 1);
-        buffer.GetData(result);
+    //    int kernelID = shader.FindKernel("PerlinNoise2DArray");
+    //    shader.SetBuffer(kernelID, "resultBuf", buffer);
+    //    shader.Dispatch(kernelID, width,height, 1);
+    //    buffer.GetData(result);
 
-        buffer.Release();
-        return result;
-    }
+    //    buffer.Release();
+    //    return result;
+    //}
 }

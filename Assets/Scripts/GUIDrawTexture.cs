@@ -4,77 +4,39 @@ using UnityEngine;
 
 public class GUIDrawTexture : MonoBehaviour
 {
-    Texture2D texture = null;
-
-    Texture2D[] textures = null;
+    List<Texture2D> textures = new List<Texture2D>();
+    List<RenderTexture> rTextures = new List<RenderTexture>();
 
     public float freq = 3;
 
-
-    public int index = 0;
-
     void Start()
     {
-        if(!texture)
-        {
-            textures = new Texture2D[2];
+        //textures.Add(new Texture2D(100, 100));
 
-            textures[0] = new Texture2D(100,100);
-            Color[] colors = new Color[100*100];
-            float[,] noise = NoiseArray.GetParlinNoiseArray(100,100,new Vector2(0,0),3);
-            for (int v = 0, x = 0; x < noise.GetLength(1); x++)
-            {
-                for (int y = 0; y < noise.GetLength(0); y++,v++)
-                {
-                    colors[v] = new Color(noise[x, y], noise[x, y], noise[x, y], 1);
-                }
-            }
-            textures[0].SetPixels(colors);
-            textures[0].Apply();
-
-            textures[1] = new Texture2D(100, 100);
-            for (int v = 0, x = 0; x < 100; x++)
-            {
-                for (int y = 0; y < 100; y++, v++)
-                {
-                    float f = Mathf.PerlinNoise((float)x/100*freq, (float)y/100 * freq);
-                    colors[v] = new Color(f, f, f, 1);
-                }
-            }
-            textures[1].SetPixels(colors);
-            textures[1].Apply();
-
-            texture = textures[index];
-        }
+        rTextures.Add(TextureGenerator.CreateTextureForCompute(100,100));
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.X))
-        {
-            index++;
-            index %= textures.Length;
-            texture = textures[index];
-        }
-        Color[] colors = new Color[100 * 100];
-        for (int v = 0, x = 0; x < 100; x++)
-        {
-            for (int y = 0; y < 100; y++, v++)
-            {
-                float f = Mathf.PerlinNoise((float)x / 100 * freq, (float)y / 100 * freq);
-                colors[v] = new Color(f, f, f, 1);
-            }
-        }
-        textures[1].SetPixels(colors);
-        textures[1].Apply();
+        TextureGenerator.RenderParlinNoise(rTextures[0], Vector2.zero, freq, 4, 0, 0.7f);
     }
 
     void OnGUI()
     {
         int w = Screen.width / 2;
         int h = Screen.height / 2;
-        int s = 512;
+        int s = 512 / (textures.Count + rTextures.Count);
 
-        GUI.DrawTexture(new Rect(w - s / 2, h - s / 2, s, s), texture);
+
+
+        for (int i = 0; i < textures.Count; i++)
+        {
+            GUI.DrawTexture(new Rect((w - s / 2) + s*i - (s/2)*(textures.Count + rTextures.Count - 1), h - s / 2, s, s), textures[i]);
+        }
+
+        for (int i = 0; i < rTextures.Count; i++)
+        {
+            GUI.DrawTexture(new Rect((w - s / 2) + s * (textures.Count + i) - (s / 2) * (textures.Count + rTextures.Count - 1), h - s / 2, s, s), rTextures[i]);
+        }
     }
 }
