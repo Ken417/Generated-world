@@ -11,11 +11,19 @@ public class Move : MonoBehaviour
     [Header("歩く速さ"), SerializeField]
     float walkSpeed = 6.0f;
 
+    [Header("走りの係数"), SerializeField]
+    float runCoefficient = 2.0f;
+
     [Header("ジャンプ力"), SerializeField]
     float jumpPower = 8.0f;
 
+    [Header("重さ"), SerializeField]
+    float weight = 1.0f;
+
     private Vector3 moveDirection = Vector3.zero;
     CharacterController controller;
+    Vector3 setPos = Vector3.zero;
+    bool set = false;
 
     void OnEnable()
     {
@@ -26,16 +34,31 @@ public class Move : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (controller.isGrounded)
+        if (!set)
         {
-            moveDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-            moveDirection = transform.TransformDirection(moveDirection);
-            moveDirection *= walkSpeed;
-            if (Input.GetButton("Jump"))
-                moveDirection.y = jumpPower;
+            if (controller.isGrounded)
+            {
+                moveDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+                moveDirection = transform.TransformDirection(moveDirection);
+                if (Input.GetKey(KeyCode.LeftShift)) { moveDirection *= walkSpeed * runCoefficient; }
+                else { moveDirection *= walkSpeed; }
+                if (Input.GetButton("Jump"))
+                    moveDirection.y = jumpPower;
 
+            }
+            moveDirection += Physics.gravity * weight;
+            controller.Move(moveDirection * Time.deltaTime);
         }
-        moveDirection += Physics.gravity * Time.deltaTime;
-        controller.Move(moveDirection * Time.deltaTime);
+        else
+        {
+            set = false;
+            transform.position = setPos;
+        }
+    }
+
+    public void SetPosition(Vector3 pos)
+    {
+        set = true;
+        setPos = pos;
     }
 }

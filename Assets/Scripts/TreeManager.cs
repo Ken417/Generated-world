@@ -21,11 +21,13 @@ public class TreeManager : MonoBehaviour
         {
             fg = GameObject.Find("Field").GetComponent<FieldGenerator>();
         }
+
     }
 
     public void SetTree()
     {
-        if (!fg) return;
+        if (!fg) { return; }
+
         int res = (int)Mathf.Sqrt(fg.mesh.vertexCount);
         Vector3[] vertices = fg.mesh.vertices;
         Color[] colors = fg.mesh.colors;
@@ -91,6 +93,7 @@ public class TreeManager : MonoBehaviour
                 }
             }
         }
+        fg = null;
     }
 
     float Vec2Cross(Vector2 v1, Vector2 v2)

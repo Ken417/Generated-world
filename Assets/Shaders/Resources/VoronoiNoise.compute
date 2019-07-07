@@ -42,7 +42,7 @@ float voronoi2d(float2 po) {
 	return pow(abs(1. / res), 0.0625);
 }
 
-[numthreads(8, 8, 1)]
+[numthreads(1, 1, 1)]
 void VoronoiNoise(uint2 id : SV_DispatchThreadID)
 {
 	resultTex.GetDimensions(width, height);

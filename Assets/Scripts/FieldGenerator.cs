@@ -117,8 +117,6 @@ public class FieldGenerator : MonoBehaviour
 
     void Start()
     {
-        GameObject.Find("TEST").GetComponent<MeshRenderer>().material.mainTexture = TextureGenerator.CreateVoronoiDiagramTexture(200, 200);
-
         //これやらないとなぜか当たらない
         {
             GetComponent<MeshCollider>().enabled = false;

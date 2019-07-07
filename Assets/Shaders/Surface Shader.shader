@@ -5,23 +5,28 @@
 		_CliffTex("崖のテクスチャ", 2D) = "white" {}
 		_ValueNoiseTex("バリューノイズ", 2D) = "white" {}
 		_ParlinNoiseTex("パーリンノイズ", 2D) = "white" {}
+		//_BumpMap("normal", 2D) = "white" {}
 	}
+
 		SubShader{
 			Tags { "RenderType" = "Opaque" }
 			LOD 200
 
 			CGPROGRAM
-			#pragma surface surf Lambert
+			#pragma surface surf Lambert vertex:vert
 
 			sampler2D _GrassTex;
 			sampler2D _SandTex;
 			sampler2D _CliffTex;
 			sampler2D _ValueNoiseTex;
 			sampler2D _ParlinNoiseTex;
+			//sampler2D _BumpMap;
 
 			struct Input {
 				float2 uv_MainTex;
+				float2 uv_BumpMap;
 				half4 color : COLOR;
+				float3 worldPos;
 			};
 
 			float random(fixed2 p) 
@@ -57,7 +62,15 @@
 				return result;
 			}
 
-			void surf(Input IN, inout SurfaceOutput o) {
+			void vert(inout appdata_full v) {
+				//if (_WorldSpaceCameraPos.x < v.vertex.x * 10000)
+				//{
+				//	v.color.b = 1;
+				//}
+			}
+
+			void surf(Input IN, inout SurfaceOutput o) 
+			{
 
 				half4 c = tex2D(_ValueNoiseTex, IN.uv_MainTex * 10000);
 				c += tex2D(_ValueNoiseTex, IN.uv_MainTex * 1000);
@@ -75,6 +88,7 @@
 				//o.Albedo = c.rgb * IN.color.rgb;
 				//o.Albedo *= 1.8f;
 				o.Alpha = c.a * IN.color.a;
+				//o.Normal = UnpackNormal((tex2D(_BumpMap, IN.uv_BumpMap * 1000)+ tex2D(_BumpMap, IN.uv_BumpMap * 10))/2);
 			}
 			ENDCG
 	}
