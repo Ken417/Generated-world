@@ -3,7 +3,27 @@ guid: 18acf8ef721d3b84896ae00038ba7e87
 ModelImporter:
   serializedVersion: 25
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Vegetation_Juniper2
+    second: {fileID: 2100000, guid: e3435f5fba44e9b43af1aa72fce72b79, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Wood_Bamboo_Medium
+    second: {fileID: 2100000, guid: d23e831f7436a5041930ec8f18324444, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Wood_Cherry_Original
+    second: {fileID: 2100000, guid: 8ad9446095df4144c857f6e2b52fe9e1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Wood_Floor_Light
+    second: {fileID: 2100000, guid: 923b89b3191309943a6b93c6b6fcf5ff, type: 2}
   materials:
     importMaterials: 1
     materialName: 0

@@ -15,7 +15,7 @@ public class Boarding : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.B))
         {
-            Vector3 pos = transform.Find("ID227").position;
+            Vector3 pos = transform.Find("Mast1").position;
             pos.y += 20;
             GameObject.Find("Player").GetComponent<Move>().SetPosition(pos);
         }

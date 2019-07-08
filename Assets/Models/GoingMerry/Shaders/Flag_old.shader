@@ -1,4 +1,4 @@
-﻿Shader "Custom/Flag" {
+﻿Shader "Custom/Flag_old" {
 	Properties{
 			_MainTex("Albedo (RGB)", 2D) = "white" {}
 			_Speed("Speed", Range(0, 20.0)) = 1
