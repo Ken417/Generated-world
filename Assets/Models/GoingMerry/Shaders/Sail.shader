@@ -5,7 +5,8 @@
         _Color ("Color", Color) = (1,1,1,1)
         _MainTex ("Albedo (RGB)", 2D) = "white" {}
         _Glossiness ("Smoothness", Range(0,1)) = 0.5
-        _Metallic ("Metallic", Range(0,1)) = 0.0
+				_Metallic("Metallic", Range(0,1)) = 0.0
+				_Axis ("Axis", Vector) = (0,0,0,0)
     }
     SubShader
     {
@@ -39,10 +40,7 @@
 
 				void vert(inout appdata_full v)
 				{
-					//if (_WorldSpaceCameraPos.x < v.vertex.x * 10000)
-					//{
-					//	v.color.b = 1;
-					//}
+					v.vertex.y += length(v.vertex);
 				}
 
         void surf (Input IN, inout SurfaceOutputStandard o)

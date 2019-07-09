@@ -7,10 +7,9 @@
 				_DefaultOffsetX("DefaultOffsetX", Float) = 1
 				_DefaultFrequency("DefaultFrequency", Range(0, 1.3)) = 1
 				_DefaultAmplitude("DefaultAmplitude", Range(0, 5.0)) = 1
-				_Axis("Axis", Vector) = (0,0,0,0)
-				_Speed("Speed", Range(0, 20.0)) = 1
-				_Frequency("Frequency", Range(0, 1.3)) = 1
-				_Amplitude("Amplitude", Range(0, 0.1)) = 1
+				_Speed("Speed", Range(0, 100.0)) = 1
+				_Frequency("Frequency", Range(0, 10)) = 1
+				_Amplitude("Amplitude", Range(0, 10)) = 1
     }
     SubShader
     {
@@ -37,7 +36,6 @@
 				float _DefaultOffsetX;
 				float _DefaultFrequency;
 				float _DefaultAmplitude;
-				float _Axis;
 				float _Speed;
 				float _Frequency;
 				float _Amplitude;
@@ -51,11 +49,8 @@
 
 				void vert(inout appdata_full v)
 				{
-					float f = abs(_Axis.x - v.vertex.x);
 					v.vertex.y += sin((v.vertex.x+ _DefaultOffsetX)* _DefaultFrequency) * _DefaultAmplitude;
-					v.vertex.y += cos((v.vertex.x + _Time.y * _Speed) * _Frequency) * _Amplitude*f*f;
-					//o.pos = UnityObjectToClipPos(v.vertex);
-					//o.uv = TRANSFORM_TEX(v.texcoord, _MainTex);
+					v.vertex.y += cos((v.vertex.x + _Time.y * -_Speed) * _Frequency) * _Amplitude;
 				}
 
         void surf (Input IN, inout SurfaceOutput o)
