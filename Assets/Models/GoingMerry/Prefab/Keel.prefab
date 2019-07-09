@@ -988,10 +988,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21badacc9db2aaf4ab6a94dcdf89272b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _DefaultOffsetX: 17.78
-  _DefaultFrequency: 0.09
-  _DefaultAmplitude: 5
-  _Axis: {x: 0, y: 0, z: 0, w: 0}
   _Speed: 75.8
   _Frequency: 0.3
   _Amplitude: 1.03
@@ -7179,6 +7175,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3091887606412678006}
+  - component: {fileID: 2529130519780912438}
   m_Layer: 0
   m_Name: Sail1
   m_TagString: Untagged
@@ -7225,6 +7222,19 @@ Transform:
   m_Father: {fileID: 1025014292803713088}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2529130519780912438
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2094121467425211090}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f0b5fc326cfb7547a0ea62477c67be4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _Wind: 0.01
 --- !u!1 &2193653492307086728
 GameObject:
   m_ObjectHideFlags: 0
@@ -14821,10 +14831,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21badacc9db2aaf4ab6a94dcdf89272b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _DefaultOffsetX: 17.78
-  _DefaultFrequency: 0.09
-  _DefaultAmplitude: 5
-  _Axis: {x: 0, y: 0, z: 0, w: 0}
   _Speed: 75.8
   _Frequency: 0.3
   _Amplitude: 1.03
@@ -15299,7 +15305,6 @@ GameObject:
   - component: {fileID: 8526048689808630950}
   - component: {fileID: 795336835478150800}
   - component: {fileID: 6356008199350297193}
-  - component: {fileID: 3686241181280212228}
   - component: {fileID: 3686241181280212229}
   - component: {fileID: 3686241181280212234}
   - component: {fileID: 646798554137411039}
@@ -15379,18 +15384,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &3686241181280212228
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4614436741677094581}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7626a9cc0d7c72646b0ede1931d70d53, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &3686241181280212229
 MonoBehaviour:
   m_ObjectHideFlags: 0

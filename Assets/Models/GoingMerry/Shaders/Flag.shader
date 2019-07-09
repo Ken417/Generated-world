@@ -4,9 +4,6 @@
     {
         _Color ("Color", Color) = (1,1,1,1)
         _MainTex ("Albedo (RGB)", 2D) = "white" {}
-				_DefaultOffsetX("DefaultOffsetX", Float) = 1
-				_DefaultFrequency("DefaultFrequency", Range(0, 1.3)) = 1
-				_DefaultAmplitude("DefaultAmplitude", Range(0, 5.0)) = 1
 				_Speed("Speed", Range(0, 100.0)) = 1
 				_Frequency("Frequency", Range(0, 10)) = 1
 				_Amplitude("Amplitude", Range(0, 10)) = 1
@@ -33,9 +30,6 @@
 
         fixed4 _Color;
 
-				float _DefaultOffsetX;
-				float _DefaultFrequency;
-				float _DefaultAmplitude;
 				float _Speed;
 				float _Frequency;
 				float _Amplitude;
@@ -49,8 +43,8 @@
 
 				void vert(inout appdata_full v)
 				{
-					v.vertex.y += sin((v.vertex.x+ _DefaultOffsetX)* _DefaultFrequency) * _DefaultAmplitude;
-					v.vertex.y += cos((v.vertex.x + _Time.y * -_Speed) * _Frequency) * _Amplitude;
+					v.vertex.y -= v.vertex.y;
+					v.vertex.y += cos(((v.vertex.x+ v.vertex.z) + _Time.y * -_Speed) * _Frequency) * _Amplitude;
 				}
 
         void surf (Input IN, inout SurfaceOutput o)
