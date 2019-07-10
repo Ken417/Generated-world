@@ -49,6 +49,8 @@ public class Sail : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        _Wind = (Mathf.Sin(Time.time/2)+1)/2;
+        update = true;
         if (update)
         {
             Refresh();

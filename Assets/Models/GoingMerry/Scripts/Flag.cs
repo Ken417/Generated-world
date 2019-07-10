@@ -16,7 +16,20 @@ public class Flag : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //GetComponent<MeshRenderer>().material.SetVector("_Axis",GameObject.Find("Axis1").transform.position);
+        //コンバインできない
+        //MeshFilter[] mfs = GetComponentsInChildren<MeshFilter>();
+        //CombineInstance[] combine = new CombineInstance[mfs.Length];
+        //for(int i =0;i< mfs.Length;i++)
+        //{
+        //    combine[i].mesh = mfs[i].sharedMesh;
+        //    combine[i].transform = mfs[i].transform.localToWorldMatrix;
+        //    mfs[i].gameObject.SetActive(false);
+        //}
+
+        //MeshFilter meshFilter = gameObject.AddComponent<MeshFilter>();
+        //meshFilter.mesh = new Mesh();
+        //meshFilter.mesh.CombineMeshes(combine);
+
         foreach (MeshRenderer mr in GetComponentsInChildren<MeshRenderer>())
         {
             int matNum = mr.sharedMaterials.Length;

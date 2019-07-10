@@ -5,7 +5,9 @@ using UnityEngine.Rendering;
 public class TextureGenerator : MonoBehaviour
 {
     static ComputeShader perlinNoise = null;
-
+    static ComputeShader cellularNoise = null;
+    static ComputeShader testComp = null;
+    
     //コンピュートシェーダーでテクスチャを作る場合
     public static RenderTexture CreateTextureForCompute(int width, int height, RenderTextureFormat format = RenderTextureFormat.Default)
     {
@@ -102,7 +104,7 @@ public class TextureGenerator : MonoBehaviour
         return texture;
     }
 
-    public static void RenderParlinNoise(
+    public static void RenderCellularNoise(
         RenderTexture rt, 
         Vector2 seed,
         float freq,
@@ -111,7 +113,31 @@ public class TextureGenerator : MonoBehaviour
         float persistence
         )
     {
-        if(perlinNoise==null)
+        if(cellularNoise == null)
+        {
+            cellularNoise = Resources.Load<ComputeShader>("CellularNoise");
+        }
+        cellularNoise.SetFloat("frequency", freq);
+        cellularNoise.SetFloat("octaves", octaves);
+        cellularNoise.SetFloat("lacunarity", lacunarity);
+        cellularNoise.SetFloat("persistence", persistence);
+
+        int kernelID = cellularNoise.FindKernel("CellularNoise");
+        cellularNoise.SetTexture(kernelID,"resultTex",rt);
+        cellularNoise.Dispatch(kernelID, rt.width, rt.height, 1);
+
+    }
+
+    public static void RenderParlinNoise(
+    RenderTexture rt,
+    Vector2 seed,
+    float freq,
+    float octaves,
+    float lacunarity,
+    float persistence
+    )
+    {
+        if (perlinNoise == null)
         {
             perlinNoise = Resources.Load<ComputeShader>("PerlinNoise");
         }
@@ -121,9 +147,36 @@ public class TextureGenerator : MonoBehaviour
         perlinNoise.SetFloat("persistence", persistence);
 
         int kernelID = perlinNoise.FindKernel("PerlinNoise2DTex");
-        perlinNoise.SetTexture(kernelID,"resultTex",rt);
+        perlinNoise.SetTexture(kernelID, "resultTex", rt);
         perlinNoise.Dispatch(kernelID, rt.width, rt.height, 1);
 
+    }
+
+    public static void TestComputeTex(
+        RenderTexture rt,
+        string kernaelName,
+        float f1,
+        float f2,
+        float f3,
+        int i1,
+        int i2,
+        int i3
+        )
+    {
+        if (testComp == null)
+        {
+            testComp = Resources.Load<ComputeShader>("TEST");
+        }
+        testComp.SetFloat("f1", f1);
+        testComp.SetFloat("f2", f2);
+        testComp.SetFloat("f3", f3);
+        testComp.SetInt("i1", i1);
+        testComp.SetInt("i2", i2);
+        testComp.SetInt("i3", i3);
+
+        int kernelID = testComp.FindKernel(kernaelName);
+        testComp.SetTexture(kernelID, "resultTex", rt);
+        testComp.Dispatch(kernelID, rt.width, rt.height, 1);
     }
 
     public static Texture2D CreateRandomNoiseTexture(int width, int height)
