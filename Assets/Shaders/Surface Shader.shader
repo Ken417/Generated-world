@@ -6,6 +6,10 @@
 		_ValueNoiseTex("バリューノイズ", 2D) = "white" {}
 		_ParlinNoiseTex("パーリンノイズ", 2D) = "white" {}
 		//_BumpMap("normal", 2D) = "white" {}
+		_MinDist("Min Distance", Range(0.1, 50)) = 10
+		_MaxDist("Max Distance", Range(0.1, 50)) = 25
+		_TessFactor("Tessellation", Range(1, 50)) = 10
+		_Displacement("Displacement", Range(0, 1.0)) = 0.3
 	}
 
 		SubShader{
@@ -13,7 +17,10 @@
 			LOD 200
 
 			CGPROGRAM
-			#pragma surface surf Lambert vertex:vert
+
+			#pragma surface surf BlinnPhong addshadow fullforwardshadows vertex:vert tessellate:tessDistance nolightmap
+			//#pragma surface surf Lambert vertex:vert tessellate:tessDistance nolightmap
+			#include "Tessellation.cginc"
 
 			sampler2D _GrassTex;
 			sampler2D _SandTex;
@@ -21,6 +28,10 @@
 			sampler2D _ValueNoiseTex;
 			sampler2D _ParlinNoiseTex;
 			//sampler2D _BumpMap;
+			float _TessFactor;
+			float _Displacement;
+			float _MinDist;
+			float _MaxDist;
 
 			struct Input {
 				float2 uv_MainTex;
@@ -62,11 +73,14 @@
 				return result;
 			}
 
+			float4 tessDistance(appdata_full v0, appdata_full v1, appdata_full v2)
+			{
+				return UnityDistanceBasedTess(v0.vertex, v1.vertex, v2.vertex, _MinDist, _MaxDist, _TessFactor);
+			}
+
 			void vert(inout appdata_full v) {
-				//if (_WorldSpaceCameraPos.x < v.vertex.x * 10000)
-				//{
-				//	v.color.b = 1;
-				//}
+				float d = tex2Dlod(_GrassTex, float4(v.texcoord.xy, 0, 0)).r * _Displacement;
+				v.vertex.xyz += v.normal * d;
 			}
 
 			void surf(Input IN, inout SurfaceOutput o) 
