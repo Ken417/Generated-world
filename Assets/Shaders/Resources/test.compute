@@ -1,104 +1,86 @@
-﻿#pragma kernel CSMain
-
-RWTexture2D< float4 > tex;
-
-float w, h;
-
-int re;
-float fr;
+﻿#pragma kernel TEST1
+#pragma kernel TEST2
 
 const float PI = 3.141592653589793238462;
+
+RWTexture2D< float4 > resultTex;
+
+float width, height;
+
+float f1, f2, f3;
+int i1, i2, i3;
+
+
+
+[numthreads(1, 1, 1)]
+void TEST1(uint2 id : SV_DispatchThreadID)
+{
+	resultTex.GetDimensions(width, height);
+
+	float2 st = float2(id.x / width, id.y / height);
+
+	float3 color = float3(0,0,0);
+
+	st *= f1; //f1 = scale
+	st = frac(st); // Wrap arround 1.0
+
+	// Now we have 3 spaces that goes from 0-1
+
+	color = float3(st, 0.0);
+	//color = vec3(circle(st,0.5));
+
+	resultTex[id] = float4(color, 1.0);
+}
+
+float2 rotate2D(float2 _st, float _angle) {
+	_st -= float2(0.5f, 0.5f);
+	//_st = mul(float2x2(cos(_angle), -sin(_angle), sin(_angle),cos(_angle)),_st);
+	float2 st2;
+	st2.x = _st.x * cos(_angle) - _st.y * sin(_angle);
+	st2.y = _st.x * sin(_angle) + _st.y * cos(_angle);
+	st2 += float2(0.5f, 0.5f);
+	return st2;
+}
+
+float2 tile(float2 _st, float _zoom) {
+	_st *= _zoom;
+	return frac(_st);
+}
+
+float box(float2 _st, float2 _size, float _smoothEdges)
+{
+	_size = float2(0.5f, 0.5f) - _size * 0.5f;
+	float2 aa = float2(_smoothEdges * 0.5, _smoothEdges * 0.5);
+	float2 uv = smoothstep(_size, _size + aa, _st);
+	uv *= smoothstep(_size, _size + aa, float2(1.0, 1.0) - _st);
+	return uv.x * uv.y;
+}
+
+[numthreads(1, 1, 1)]
+void TEST2(uint2 id : SV_DispatchThreadID)
+{
+	resultTex.GetDimensions(width, height);
+
+	float2 st = float2(id.x / width, id.y / height);
+
+	float3 color = float3(0,0,0);
+
+	// Divide the space in 4
+	st = tile(st, i1);
+
+	// Use a matrix to rotate the space 45 degrees
+	st = rotate2D(st, PI * f1);
+
+	// Draw a square
+	float c = box(st, float2(f2, f2), f3);
+	color = float3(c,c,c);
+	// color = float3(st,0.0);
+
+	resultTex[id] = float4(color, 1.0);
+}
 
 //float rand(float2 c)
 //{
 //	return frac(sin(dot(c.xy, float2(12.9898, 78.233))) * 43758.5453);
 //}
 
-//float noise(float2 p, float freq)
-//{
-//	float unit = w / freq;
-//	float2 ij = floor(p / unit);
-//	float2 xy = fmod(p, unit) / unit;
-//	//xy = 3.*xy*xy-2.*xy*xy*xy;
-//	xy = .5 * (1. - cos(PI * xy));
-//	float a = rand((ij + float2(0., 0.)));
-//	float b = rand((ij + float2(1., 0.)));
-//	float c = rand((ij + float2(0., 1.)));
-//	float d = rand((ij + float2(1., 1.)));
-//	float x1 = lerp(a, b, xy.x);
-//	float x2 = lerp(c, d, xy.x);
-//	return lerp(x1, x2, xy.y);
-//}
-
-float rand(float2 co) { return frac(sin(dot(co.xy, float2(12.9898, 78.233))) * 43758.5453); }
-float rand(float2 co, float l) { return rand(float2(rand(co), l)); }
-float rand(float2 co, float l, float t) { return rand(float2(rand(co, l), t)); }
-
-float perlin(float2 p, float dim, float time) {
-	float2 pos = floor(p * dim);
-	float2 posx = pos + float2(1.0, 0.0);
-	float2 posy = pos + float2(0.0, 1.0);
-	float2 posxy = pos + float2(1.0, 1.0);
-
-	float c = rand(pos, dim, time);
-	float cx = rand(posx, dim, time);
-	float cy = rand(posy, dim, time);
-	float cxy = rand(posxy, dim, time);
-
-	float2 d = frac(p * dim);
-	d = -0.5 * cos(d * PI) + 0.5;
-
-	float ccx = lerp(c, cx, d.x);
-	float cycxy = lerp(cy, cxy, d.x);
-	float center = lerp(ccx, cycxy, d.y);
-
-	return center * 2.0 - 1.0;
-}
-
-// p must be normalized!
-//float perlin(vec2 p, float dim)
-//{
-//	return perlin(p, dim, 0.0);
-//}
-
-[numthreads(8 , 8, 1)]
-void CSMain(uint3 id : SV_DispatchThreadID)
-{
-	float2 c = float2(id.x / w, id.y / h);
-
-	//float f = noise(c, fr);
-	float f = perlin(c,re,fr);
-
-	tex[id.xy] = float4(f,f,f, 1);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//// Each #kernel tells which function to compile; you can have many kernels
-//#pragma kernel CSMain
-//
-//// Create a RenderTexture with enableRandomWrite flag and set it
-//// with cs.SetTexture
-//RWTexture2D<float4> Result;
-//
-//[numthreads(8,8,1)]
-//void CSMain (uint3 id : SV_DispatchThreadID)
-//{
-//    // TODO: insert actual code here!
-//
-//    Result[id.xy] = float4(id.x & id.y, (id.x & 15)/15.0, (id.y & 15)/15.0, 0.0);
-//}

@@ -9,16 +9,27 @@ public class GUIDrawTexture : MonoBehaviour
 
     public float freq = 3;
 
+    public float f1 = 0;
+    public float f2 = 0;
+    public float f3 = 0;
+    public int i1 = 0;
+    public int i2 = 0;
+    public int i3 = 0;
+
+
+
     void Start()
     {
         //textures.Add(new Texture2D(100, 100));
 
+        rTextures.Add(TextureGenerator.CreateTextureForCompute(100,100));
         rTextures.Add(TextureGenerator.CreateTextureForCompute(100,100));
     }
 
     void Update()
     {
         TextureGenerator.RenderParlinNoise(rTextures[0], Vector2.zero, freq, 4, 0, 0.7f);
+        TextureGenerator.TestComputeTex(rTextures[1],"TEST2", f1,f2,f3,i1,i2,i3);
     }
 
     void OnGUI()
