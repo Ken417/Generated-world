@@ -1,0 +1,174 @@
+﻿#pragma kernel VoronoiNoiseColor
+#pragma kernel VoronoiNoise
+#pragma kernel VoronoiNoiseEdge
+
+RWTexture2D< float4 > resultTex;
+RWStructuredBuffer<float> resultBuf;
+
+float2 seed;
+
+float lightness; //明度
+float scale;
+
+float octaves;
+float lacunarity;
+float persistence;
+
+
+float2 random2(float2 p)
+{
+	return frac(sin(float2(dot(p, float2(127.1, 311.7)), dot(p, float2(269.5, 183.3)))) * 43758.5453);
+}
+
+float random(float2 st)
+{
+	return frac(sin(dot(st.xy, float2(12.9898, 78.233))) * 43758.5453123);
+}
+
+float3 RandomColor(float2 st)
+{
+	float3 color;
+	color.r = frac(sin(dot(st.xy, float2(12.9898, 78.233))) * 43758.5453123);
+	st.x += color.r;
+	color.g = frac(sin(dot(st.xy, float2(12.9898, 78.233))) * 43758.5453123);
+	st.y += color.g;
+	color.b = frac(sin(dot(st.xy, float2(12.9898, 78.233))) * 43758.5453123);
+
+	return color;
+}
+
+void voronoi(uint2 id,inout float2 m_pos)
+{
+	float width, height;
+	resultTex.GetDimensions(width, height);
+	float2 st = float2(id.x / width, id.y / height);
+
+
+	// Scale
+	st *= scale;
+	st += seed;
+
+	// Tile the space
+	float2 i_st = floor(st);
+	float2 f_st = frac(st);
+
+	float m_dist = 1.;  // minimun distance
+
+	for (int y = -1; y <= 1; y++) {
+		for (int x = -1; x <= 1; x++) {
+			// Neighbor place in the grid
+			float2 neighbor = float2(float(x), float(y));
+
+			// Random position from current + neighbor place in the grid
+			float2 po = random2(i_st + neighbor);
+
+			// Animate the point
+			//point = 0.5 + 0.5 * sin(u_time + 6.2831 * point);
+
+			// floattor between the pixel and the point
+			float2 diff = neighbor + po - f_st;
+
+			// Distance to the point
+			float dist = length(diff);
+
+			// Keep the closer distance
+			if (m_dist > dist)
+			{
+				m_dist = dist;
+				m_pos = neighbor + po + i_st;
+			}
+		}
+	}
+}
+
+[numthreads(1, 1, 1)]
+void VoronoiNoiseColor(uint2 id : SV_DispatchThreadID)
+{
+	float2 m_pos;
+	voronoi(id,m_pos);
+	float3 color = float3(0, 0, 0);
+
+	// Draw the min distance (distance field)
+	color = RandomColor(m_pos);
+
+	// Draw cell center
+	//color += 1. - step(.02, m_dist);
+
+	// Draw grid
+	//color.r += step(.98, f_st.x) + step(.98, f_st.y);
+
+	// Show isolines
+	//color -= step(.7,abs(sin(27.0*m_dist)))*.5;
+
+	resultTex[id] = float4(color, 1) + lightness;
+}
+
+[numthreads(1, 1, 1)]
+void VoronoiNoise(uint2 id : SV_DispatchThreadID)
+{
+	float2 m_pos;
+	voronoi(id, m_pos);
+	float3 color = float3(0, 0, 0);
+
+	// Draw the min distance (distance field)
+	float c= random(m_pos);
+	color = float3(c, c, c);
+
+	// Draw cell center
+	//color += 1. - step(.02, m_dist);
+
+	// Draw grid
+	//color.r += step(.98, f_st.x) + step(.98, f_st.y);
+
+	// Show isolines
+	//color -= step(.7,abs(sin(27.0*m_dist)))*.5;
+
+	resultTex[id] = float4(color, 1) + lightness;
+}
+
+//http://www.iquilezles.org/www/articles/voronoilines/voronoilines.htm
+[numthreads(1, 1, 1)]//ボロノイの輪郭線を正確に描く
+void VoronoiNoiseEdge(uint2 id : SV_DispatchThreadID)
+{
+	float width, height;
+	resultTex.GetDimensions(width, height);
+	float2 st = float2(id.x / width, id.y / height);
+
+	st *= scale;
+	st += seed;
+
+	float2 p = float2(floor(st));
+	float2  f = frac(st);
+
+	float2 mb;
+	float2 mr;
+
+	float res = 8.0;
+	for (int j = -1; j <= 1; j++)
+		for (int i = -1; i <= 1; i++)
+		{
+			float2 b = float2(i, j);
+			float2  r = float2(b)+random2(p + b) - f;
+			float d = dot(r, r);
+
+			if (d < res)
+			{
+				res = d;
+				mr = r;
+				mb = b;
+			}
+		}
+
+	res = 8.0;
+	for (int j = -2; j <= 2; j++)
+		for (int i = -2; i <= 2; i++)
+		{
+			float2 b = mb + float2(i, j);
+			float2  r = float2(b)+random2(p + b) - f;
+			float d = dot(0.5 * (mr + r), normalize(r - mr));
+
+			res = min(res, d) + lightness;
+		}
+
+	resultTex[id] = float4(res, res, res, 1);
+}
