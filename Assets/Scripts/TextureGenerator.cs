@@ -6,6 +6,7 @@ public class TextureGenerator : MonoBehaviour
 {
     static ComputeShader perlinNoise = null;
     static ComputeShader cellularNoise = null;
+    static ComputeShader voronoiNoise = null;
     static ComputeShader testComp = null;
     
     //コンピュートシェーダーでテクスチャを作る場合
@@ -107,7 +108,8 @@ public class TextureGenerator : MonoBehaviour
     public static void RenderCellularNoise(
         RenderTexture rt, 
         Vector2 seed,
-        float freq,
+        float lightness,
+        float scale,
         float octaves,
         float lacunarity,
         float persistence
@@ -117,7 +119,9 @@ public class TextureGenerator : MonoBehaviour
         {
             cellularNoise = Resources.Load<ComputeShader>("CellularNoise");
         }
-        cellularNoise.SetFloat("frequency", freq);
+        cellularNoise.SetVector("seed", seed);
+        cellularNoise.SetFloat("lightness", lightness);
+        cellularNoise.SetFloat("scale", scale);
         cellularNoise.SetFloat("octaves", octaves);
         cellularNoise.SetFloat("lacunarity", lacunarity);
         cellularNoise.SetFloat("persistence", persistence);
@@ -128,9 +132,91 @@ public class TextureGenerator : MonoBehaviour
 
     }
 
-    public static void RenderParlinNoise(
+    public static void RenderVoronoiNoiseColor(
     RenderTexture rt,
     Vector2 seed,
+    float lightness,
+    float scale,
+    float octaves,
+    float lacunarity,
+    float persistence
+    )
+    {
+        if (voronoiNoise == null)
+        {
+            voronoiNoise = Resources.Load<ComputeShader>("VoronoiNoise");
+        }
+        voronoiNoise.SetVector("seed", seed);
+        voronoiNoise.SetFloat("lightness", lightness);
+        voronoiNoise.SetFloat("scale", scale);
+        voronoiNoise.SetFloat("octaves", octaves);
+        voronoiNoise.SetFloat("lacunarity", lacunarity);
+        voronoiNoise.SetFloat("persistence", persistence);
+
+        int kernelID = voronoiNoise.FindKernel("VoronoiNoiseColor");
+        voronoiNoise.SetTexture(kernelID, "resultTex", rt);
+        voronoiNoise.Dispatch(kernelID, rt.width, rt.height, 1);
+
+    }
+
+    public static void RenderVoronoiNoise(
+    RenderTexture rt,
+    Vector2 seed,
+    float lightness,
+    float scale,
+    float octaves,
+    float lacunarity,
+    float persistence
+    )
+    {
+        if (voronoiNoise == null)
+        {
+            voronoiNoise = Resources.Load<ComputeShader>("VoronoiNoise");
+        }
+        voronoiNoise.SetVector("seed", seed);
+        voronoiNoise.SetFloat("lightness", lightness);
+        voronoiNoise.SetFloat("scale", scale);
+        voronoiNoise.SetFloat("octaves", octaves);
+        voronoiNoise.SetFloat("lacunarity", lacunarity);
+        voronoiNoise.SetFloat("persistence", persistence);
+
+        int kernelID = voronoiNoise.FindKernel("VoronoiNoise");
+        voronoiNoise.SetTexture(kernelID, "resultTex", rt);
+        voronoiNoise.Dispatch(kernelID, rt.width, rt.height, 1);
+
+    }
+
+    public static void RenderVoronoiNoiseEdge(
+    RenderTexture rt,
+    Vector2 seed,
+    float lightness,
+    float scale,
+    float octaves,
+    float lacunarity,
+    float persistence
+    )
+    {
+        if (voronoiNoise == null)
+        {
+            voronoiNoise = Resources.Load<ComputeShader>("VoronoiNoise");
+        }
+        voronoiNoise.SetVector("seed", seed);
+        voronoiNoise.SetFloat("lightness", lightness);
+        voronoiNoise.SetFloat("scale", scale);
+        voronoiNoise.SetFloat("octaves", octaves);
+        voronoiNoise.SetFloat("lacunarity", lacunarity);
+        voronoiNoise.SetFloat("persistence", persistence);
+
+        int kernelID = voronoiNoise.FindKernel("VoronoiNoiseEdge");
+        voronoiNoise.SetTexture(kernelID, "resultTex", rt);
+        voronoiNoise.Dispatch(kernelID, rt.width, rt.height, 1);
+
+    }
+
+    public static void RenderPerlinNoise(
+    RenderTexture rt,
+    Vector2 seed,
+    float lightness,
     float freq,
     float octaves,
     float lacunarity,
@@ -141,6 +227,8 @@ public class TextureGenerator : MonoBehaviour
         {
             perlinNoise = Resources.Load<ComputeShader>("PerlinNoise");
         }
+        perlinNoise.SetVector("seed", seed);
+        perlinNoise.SetFloat("lightness", lightness);
         perlinNoise.SetFloat("frequency", freq);
         perlinNoise.SetFloat("octaves", octaves);
         perlinNoise.SetFloat("lacunarity", lacunarity);
@@ -197,4 +285,10 @@ public class TextureGenerator : MonoBehaviour
 
         return texture;
     }
+
+    public static Texture2D CreateUnityPerlinNoise2DTexture()
+    {
+        return null;
+    }
+
 }

@@ -3,53 +3,78 @@
 RWTexture2D< float4 > resultTex;
 RWStructuredBuffer<float> resultBuf;
 
-float width, height;
-
 float2 seed;
 
-float frequency;
+float lightness; //明度
+float scale;
+
 float octaves;
 float lacunarity;
 float persistence;
 
-const float2x2 myt = float2x2(.12121212, .13131313, -.13131313, .12121212);
-const float2 mys = float2(1e4, 1e6);
 
-float2 rhash(float2 uv) {
-	uv = mul(uv,myt);
-	uv *= mys;
-	return frac(frac(uv / mys) * uv);
+float2 random2(float2 p) 
+{
+	return frac(sin(float2(dot(p, float2(127.1, 311.7)), dot(p, float2(269.5, 183.3)))) * 43758.5453);
 }
 
-float3 hash(float3 p) {
-	return frac(sin(float3(dot(p, float3(1.0, 57.0, 113.0)),
-		dot(p, float3(57.0, 113.0, 1.0)),
-		dot(p, float3(113.0, 1.0, 57.0)))) *
-		43758.5453);
-}
-
-float voronoi2d(float2 po) {
-	float2 p = floor(po);
-	float2 f = frac(po);
-	float res = 0.0;
-	for (int j = -1; j <= 1; j++) {
-		for (int i = -1; i <= 1; i++) {
-			float2 b = float2(i, j);
-			float2 r = float2(b) - f + rhash(p + b);
-			res += 1. / pow(dot(r, r), 8.);
-		}
-	}
-	return pow(abs(1. / res), 0.0625);
-}
 
 [numthreads(1, 1, 1)]
 void CellularNoise(uint2 id : SV_DispatchThreadID)
 {
+	float width, height;
 	resultTex.GetDimensions(width, height);
+	float2 st = float2(id.x / width, id.y / height);
 
-	float2 c = float2(id.x / width, id.y / height);
+	float3 color = float3(0,0,0);
 
-	float pn = voronoi2d(c* frequency);
+	// Scale
+	st *= scale;
+	st += seed;
 
-	resultTex[id] = float4(pn, pn, pn, 1);
+	// Tile the space
+	float2 i_st = floor(st);
+	float2 f_st = frac(st);
+
+	float m_dist = 1.;  // minimun distance
+
+	for (int y = -1; y <= 1; y++) {
+		for (int x = -1; x <= 1; x++) {
+			// Neighbor place in the grid
+			float2 neighbor = float2(float(x), float(y));
+
+			// Random position from current + neighbor place in the grid
+			float2 po = random2(i_st + neighbor);
+
+			// Animate the point
+			//point = 0.5 + 0.5 * sin(u_time + 6.2831 * point);
+
+			// floattor between the pixel and the point
+			float2 diff = neighbor + po - f_st;
+
+			// Distance to the point
+			float dist = length(diff);
+
+			// Keep the closer distance
+			m_dist = min(m_dist, dist);
+		}
+	}
+
+	// Draw the min distance (distance field)
+	color += (m_dist + lightness);
+
+	// Draw cell center
+	//color += 1. - step(.02, m_dist);
+
+	// Draw grid
+	//color.r += step(.98, f_st.x) + step(.98, f_st.y);
+
+	// Show isolines
+	//color -= step(.7,abs(sin(27.0*m_dist)))*.5;
+
+	resultTex[id] = float4(color, 1);
 }
+
+
+
+

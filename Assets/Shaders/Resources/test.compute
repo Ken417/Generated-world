@@ -1,7 +1,10 @@
 ﻿#pragma kernel TEST1
 #pragma kernel TEST2
+#pragma kernel TEST3
+#pragma kernel TEST4
+#pragma kernel TEST5
 
-const float PI = 3.141592653589793238462;
+#define PI 3.141592653589793238462
 
 RWTexture2D< float4 > resultTex;
 
@@ -34,16 +37,56 @@ void TEST1(uint2 id : SV_DispatchThreadID)
 
 float2 rotate2D(float2 _st, float _angle) {
 	_st -= float2(0.5f, 0.5f);
-	//_st = mul(float2x2(cos(_angle), -sin(_angle), sin(_angle),cos(_angle)),_st);
-	float2 st2;
-	st2.x = _st.x * cos(_angle) - _st.y * sin(_angle);
-	st2.y = _st.x * sin(_angle) + _st.y * cos(_angle);
-	st2 += float2(0.5f, 0.5f);
-	return st2;
+	_st = mul(float2x2(cos(_angle), -sin(_angle), sin(_angle),cos(_angle)),_st);
+	_st += float2(0.5f, 0.5f);
+	return _st;
+}
+
+float2 rotateTilePattern(float2 _st) {
+
+	//  Scale the coordinate system by 2x2
+	_st *= 2.0;
+
+	//  Give each cell an index number
+	//  according to its position
+	float index = 0.0;
+	index += step(1., fmod(_st.x, 2.0)) * 2.0;
+	index += step(1., fmod(_st.y, 2.0));
+
+	//      |
+	//  2   |   3
+	//      |
+	//--------------
+	//      |
+	//  0   |   1
+	//      |
+
+	// Make each cell between 0.0 - 1.0
+	_st = frac(_st);
+
+	// Rotate each cell according to the index
+	if (index == 1.0) {
+		//  Rotate cell 1 by 90 degrees
+		_st = rotate2D(_st, PI * 0.5);
+	}
+	else if (index == 2.0) {
+		//  Rotate cell 2 by -90 degrees
+		_st = rotate2D(_st, PI * -0.5);
+	}
+	else if (index == 3.0) {
+		//  Rotate cell 3 by 180 degrees
+		_st = rotate2D(_st, PI);
+	}
+
+	return _st;
 }
 
 float2 tile(float2 _st, float _zoom) {
 	_st *= _zoom;
+
+	//タイルずらし
+	//_st.x += step(1., fmod(_st.y, 2.0)) * 0.5;
+
 	return frac(_st);
 }
 
@@ -69,7 +112,7 @@ void TEST2(uint2 id : SV_DispatchThreadID)
 	st = tile(st, i1);
 
 	// Use a matrix to rotate the space 45 degrees
-	st = rotate2D(st, PI * f1);
+	st = rotate2D(st,f1);
 
 	// Draw a square
 	float c = box(st, float2(f2, f2), f3);
@@ -79,8 +122,106 @@ void TEST2(uint2 id : SV_DispatchThreadID)
 	resultTex[id] = float4(color, 1.0);
 }
 
-//float rand(float2 c)
-//{
-//	return frac(sin(dot(c.xy, float2(12.9898, 78.233))) * 43758.5453);
-//}
+[numthreads(1, 1, 1)]
+void TEST3(uint2 id : SV_DispatchThreadID)
+{
+	resultTex.GetDimensions(width, height);
 
+	float2 st = float2(id.x / width, id.y / height);
+
+	st = tile(st, f1);
+	st = rotateTilePattern(st);
+
+	// Make more interesting combinations
+	 //st = tile(st,2.0);
+	 //st = rotate2D(st,-PI*0.25);
+	 //st = rotateTilePattern(st*2.);
+	 //st = rotate2D(st,PI*0.25);
+
+	 //step(st.x,st.y) just makes a b&w triangles
+	// but you can use whatever design you want.
+	float f = step(st.x, st.y);
+	resultTex[id] = float4(f,f,f, 1.0);
+}
+
+//良いランダム関数
+float random(float2 st)
+{
+	return frac(sin(dot(st.xy,float2(12.9898, 78.233))) * 43758.5453123);
+}
+
+
+float noise(in float2 st) {
+	float2 i = floor(st);
+	float2 f = frac(st);
+
+	// Four corners in 2D of a tile
+	float a = random(i);
+	float b = random(i + float2(1.0, 0.0));
+	float c = random(i + float2(0.0, 1.0));
+	float d = random(i + float2(1.0, 1.0));
+
+	// Smooth Interpolation
+
+	// Cubic Hermine Curve.  Same as SmoothStep()
+	float2 u = f * f * (3.0 - 2.0 * f);
+	// u = smoothstep(0.,1.,f);
+
+	// Mix 4 coorners percentages
+	return lerp(a, b, u.x) +
+		(c - a) * u.y * (1.0 - u.x) +
+		(d - b) * u.x * u.y;
+}
+
+[numthreads(1, 1, 1)]
+void TEST4(uint2 id : SV_DispatchThreadID) {
+
+	resultTex.GetDimensions(width, height);
+	float2 st = float2(id.x / width, id.y / height);
+
+	// Scale the coordinate system to see
+	// some noise in action
+	float2 pos = float2(st * f1);
+
+	// Use the noise function
+	float n = noise(pos);
+	n = n;
+
+	resultTex[id] = float4(n,n,n, 1.0);
+}
+
+
+//セルラーテスト
+[numthreads(1, 1, 1)]
+void TEST5(uint2 id : SV_DispatchThreadID) {
+	resultTex.GetDimensions(width, height);
+	float2 st = float2(id.x / width, id.y / height);
+
+	float3 color = float3(0,0,0);
+
+	// Cell positions
+	float2 po[5];
+	po[0] = float2(0.83, 0.75);
+	po[1] = float2(0.60, 0.07);
+	po[2] = float2(0.28, 0.64);
+	po[3] = float2(0.31, 0.26);
+	po[4] = float2(0.51, 0.46);
+
+	float m_dist = 1.;  // minimun distance
+
+	// Iterate through the points positions
+	for (int i = 0; i < 5; i++) {
+		float dist = distance(st, po[i]);
+
+		// Keep the closer distance
+		m_dist = min(m_dist, dist);
+	}
+
+	// Draw the min distance (distance field)
+	color += m_dist;
+
+	// Show isolines
+	// color -= step(.7,abs(sin(50.0*m_dist)))*.3;
+
+	resultTex[id] = float4(color, 1.0);
+}
