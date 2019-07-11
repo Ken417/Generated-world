@@ -379,6 +379,8 @@ public class FieldGenerator : MonoBehaviour
 
 }
 
+
+
 [CustomEditor(typeof(FieldGenerator))]//拡張するクラスを指定
 public class ExampleScriptEditor : Editor
 {
