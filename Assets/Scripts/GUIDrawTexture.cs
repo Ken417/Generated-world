@@ -35,6 +35,7 @@ public class GUIDrawTexture : MonoBehaviour
         Texture2D texture;
         texture = new Texture2D(width, height);
         textures.Add(texture);
+        textures.Add(TextureGenerator.CreateUnityPerlinNoise2DTexture(200,200,Vector2.zero,0,3, 0,0,0));
 
     }
 

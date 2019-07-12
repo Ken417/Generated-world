@@ -286,9 +286,84 @@ public class TextureGenerator : MonoBehaviour
         return texture;
     }
 
-    public static Texture2D CreateUnityPerlinNoise2DTexture()
+    public static Texture2D RecreateUnityPerlinNoise2DTexture(
+        Texture2D texture,
+        Vector2 seed,
+        float lightness,
+        float frequency,
+        int octaves,
+        float lacunarity,
+        float persistence
+    )
     {
-        return null;
+        int height = texture.height;
+        int width = texture.width;
+        float maxSamp = 0;
+        Color[] colors = texture.GetPixels();
+
+        for (int v = 0, y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++, v++)
+            {
+                float amplitude = 1f;
+                float range = 1f;
+                float freq = frequency;
+                float xp = ((float)x / height) * freq + seed.x;
+                float yp = ((float)y / width) * freq + seed.y;
+                float sample = Mathf.PerlinNoise(xp, yp) * amplitude;
+                for (int o = 0; o < octaves; ++o)
+                {
+                    xp = ((float)x / height) * freq + seed.x;
+                    yp = ((float)y / width) * freq + seed.y;
+                    sample += Mathf.PerlinNoise(xp, yp) * amplitude;
+
+                    freq *= lacunarity;
+                    amplitude *= persistence;
+                    range += amplitude;
+                }
+                sample /= range;
+                maxSamp = Mathf.Max(maxSamp,sample);
+
+                sample += lightness;
+
+                colors[v] = new Color(sample, sample, sample, 1);
+            }
+        }
+
+        if (maxSamp > 1)
+        {
+            float amp = 1f / maxSamp;
+            for (int v = 0, y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++, v++)
+                {
+                    float sample = colors[v].r * amp;
+                    colors[v] = new Color(sample, sample, sample, 1);
+                }
+            }
+        }
+
+
+        texture.SetPixels(colors);
+        texture.Apply();
+
+        return texture;
+    }
+
+    public static Texture2D CreateUnityPerlinNoise2DTexture(
+        int width, int height,
+        Vector2 seed,
+        float lightness,
+        float frequency,
+        int octaves,
+        float lacunarity,
+        float persistence
+    )
+    {
+        Texture2D texture = new Texture2D(width,height);
+        RecreateUnityPerlinNoise2DTexture(texture,seed,lightness,frequency,octaves,lacunarity,persistence);
+
+        return texture;
     }
 
 }

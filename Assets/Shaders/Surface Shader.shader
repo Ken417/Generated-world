@@ -79,8 +79,8 @@
 			}
 
 			void vert(inout appdata_full v) {
-				float d = tex2Dlod(_GrassTex, float4(v.texcoord.xy, 0, 0)).r * _Displacement;
-				v.vertex.xyz += v.normal * d;
+				//float d = tex2Dlod(_GrassTex, float4(v.texcoord.xy, 0, 0)).r * _Displacement;
+				//v.vertex.xyz += v.normal * d;
 			}
 
 			void surf(Input IN, inout SurfaceOutput o) 
