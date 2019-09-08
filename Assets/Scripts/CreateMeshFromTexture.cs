@@ -9,7 +9,7 @@ public class CreateMeshFromTexture : Grid
     int maxVerticesNum = 65535;
 
     [SerializeField]
-    Texture2D texture;
+    Texture2D texture= null;
 
     [SerializeField]
     Shader shader;
@@ -29,11 +29,14 @@ public class CreateMeshFromTexture : Grid
     // Start is called before the first frame update
     void Awake()
     {
-        texture = TextureGenerator.CreateUnityPerlinNoise2DTexture(200,200,Vector2.zero,0,3,5,2.85f,0.483f);
-        if(texture) { Create(texture);}
+        if (!texture)
+        {
+            texture = TextureGenerator.CreateUnityPerlinNoise2DTexture(200, 200, Vector2.zero, 0, 3, 5, 2.85f, 0.483f);
+        }
+        Create(texture);
     }
 
-    public void Create(Texture tex)
+    public void Create(Texture2D tex)
     {
         if (maxVerticesNum < texture.width * texture.height)
         {

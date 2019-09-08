@@ -81,7 +81,8 @@
 			void vert(inout appdata_full v) {
 				//float d = tex2Dlod(_GrassTex, float4(v.texcoord.xy, 0, 0)).r * _Displacement;
 				//v.vertex.xyz = v.normal * d;
-				v.vertex.y = (tex2Dlod(_PerlinNoiseTex, float4(v.texcoord.xy, 0, 0)).r-0.5f) * _Displacement;
+				//v.vertex.y += (tex2Dlod(_PerlinNoiseTex, float4(v.texcoord.xy, 0, 0)).r-0.5f) * _Displacement * 0.01f;
+				v.vertex.y += (tex2Dlod(_PerlinNoiseTex, float4(v.texcoord.xy, 0, 0)).r - 0.5f) * 0.001f;
 				
 			}
 
